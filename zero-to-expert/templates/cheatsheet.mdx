@@ -1,0 +1,51 @@
+---
+# TEMPLATE: one per guide. Copy to src/content/docs/<domain>/cheat-sheet.mdx
+# MDX (not .md) only because this template uses <Tabs>. Use .md when a page needs no components.
+title: "Cheat sheet"
+description: "Common, uncommon, and rare commands, by operating system."
+domain: windows-macos
+pageType: cheatsheet
+status: draft
+sources: []
+tags: []
+sidebar:
+  order: 90
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Commands are grouped by how often you'll need them. Rare entries each cite a source.
+
+## Common
+
+{/* syncKey="os": picking macOS in one tab group switches every group on the page. */}
+<Tabs syncKey="os">
+  <TabItem label="Windows">
+
+| Command | What it does | Example |
+| --- | --- | --- |
+| `...` | ... | `...` |
+
+  </TabItem>
+  <TabItem label="macOS">
+
+| Command | What it does | Example |
+| --- | --- | --- |
+| `...` | ... | `...` |
+
+  </TabItem>
+</Tabs>
+
+## Uncommon
+
+Same layout as Common.
+
+## Rare
+
+:::caution
+Rare commands are the easiest to get wrong. Each one links to its official documentation and was run on a real machine before this page was marked verified.
+:::
+
+| Command | What it does | Source |
+| --- | --- | --- |
+| `...` | ... | [Official docs](https://example.com) |
