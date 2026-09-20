@@ -12,6 +12,7 @@ hero:
 ## Tech
 
 - [AI agents & coding with agents](/ai-agents/)
+- [Git & GitHub](/git-github/)
 - [Windows & macOS](/windows-macos/)
 - [AWS infrastructure](/aws/)
 - [Infrastructure](/infrastructure/)

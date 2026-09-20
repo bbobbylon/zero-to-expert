@@ -1,0 +1,107 @@
+---
+title: "Git & GitHub cheat sheet"
+description: "Git and GitHub commands and fixes grouped by how often you'll need them. Entries start from real problems that came up and got solved, then get checked against official docs — it grows with each one."
+domain: git-github
+pageType: cheatsheet
+status: draft
+sources:
+  - title: "gh auth setup-git"
+    url: "https://cli.github.com/manual/gh_auth_setup-git"
+    publisher: "GitHub CLI Manual"
+  - title: "gh repo create"
+    url: "https://cli.github.com/manual/gh_repo_create"
+    publisher: "GitHub CLI Manual"
+  - title: "gh repo view"
+    url: "https://cli.github.com/manual/gh_repo_view"
+    publisher: "GitHub CLI Manual"
+  - title: "gh repo delete"
+    url: "https://cli.github.com/manual/gh_repo_delete"
+    publisher: "GitHub CLI Manual"
+  - title: "git-remote"
+    url: "https://git-scm.com/docs/git-remote"
+    publisher: "Git documentation"
+  - title: "git-push"
+    url: "https://git-scm.com/docs/git-push"
+    publisher: "Git documentation"
+  - title: "Generating a new SSH key and adding it to the ssh-agent"
+    url: "https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+    publisher: "GitHub Docs"
+  - title: "Testing your SSH connection"
+    url: "https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection"
+    publisher: "GitHub Docs"
+  - title: "Error: Permission denied (publickey)"
+    url: "https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey"
+    publisher: "GitHub Docs"
+  - title: "Restoring a deleted repository"
+    url: "https://docs.github.com/en/repositories/creating-and-managing-repositories/restoring-a-deleted-repository"
+    publisher: "GitHub Docs"
+tags: [git, github, gh-cli, ssh, cheat-sheet]
+sidebar:
+  order: 90
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Every entry below started as a real error message, not a docs read-through: `git push` or `gh repo create` failed on a real push, the fix got tried, and it worked. The specific commands are then checked against GitHub's and Git's own documentation before being listed here — see the sources above.
+
+## Common
+
+| Command | What it does |
+| --- | --- |
+| `gh auth setup-git` | Configures `git` to use the GitHub CLI as its credential helper for every host you're authenticated with in `gh`. If `gh repo create`/`gh repo view` already works, this makes plain `git push`/`git pull` over HTTPS work too — no separate token or SSH key needed. |
+| `git remote set-url origin https://github.com/<user>/<repo>.git` | Switches an existing remote from SSH (`git@github.com:...`) to HTTPS, so it authenticates via `gh auth setup-git` instead of an SSH key. |
+| `git remote -v` | Shows the current remote URL(s) — check this first when a push fails, to see whether `origin` is SSH or HTTPS. |
+| `git push -u origin main` | Pushes and, with `-u`, records `origin main` as this branch's upstream (tracking) reference, which argument-less `git pull` and other commands use afterward. |
+
+## Uncommon
+
+Only needed once per machine — most days you won't touch these at all.
+
+<Tabs syncKey="shell">
+<TabItem label="Git Bash (Windows)">
+
+| Command | What it does |
+| --- | --- |
+| `ssh-keygen -t ed25519 -C "your_email@example.com"` | Generates a new SSH key pair (accept the default file location; a passphrase is optional). |
+| `eval "$(ssh-agent -s)"` | Starts the `ssh-agent` for the current shell session. |
+| `ssh-add ~/.ssh/id_ed25519` | Loads the private key into the running agent. |
+| `clip < ~/.ssh/id_ed25519.pub` | Copies the public key to the clipboard, ready to paste into GitHub (`clip` is a built-in Windows command, not Git-specific). |
+| `ssh -T git@github.com` | Tests the connection. Success looks like `Hi <username>! You've successfully authenticated, but GitHub does not provide shell access.` — that message is expected, not an error. |
+
+</TabItem>
+<TabItem label="PowerShell (Windows)">
+
+GitHub's own Windows instructions use PowerShell's service commands instead of `eval` to start the agent:
+
+| Command | What it does |
+| --- | --- |
+| `ssh-keygen -t ed25519 -C "your_email@example.com"` | Same key generation as Git Bash. |
+| `Get-Service -Name ssh-agent \| Set-Service -StartupType Manual` | Allows the `ssh-agent` Windows service to be started (one-time setup). |
+| `Start-Service ssh-agent` | Starts the agent service. |
+| `ssh-add c:/Users/YOU/.ssh/id_ed25519` | Loads the private key into the agent. |
+| `ssh -T git@github.com` | Same connection test as above. |
+
+</TabItem>
+</Tabs>
+
+After generating the key, add it in GitHub at **Settings → SSH and GPG keys → New SSH key** before testing the connection.
+
+## Rare
+
+:::caution
+These are decision points, not single commands — read the situation, and the linked official page, before picking one.
+:::
+
+| Situation | What to do | Source |
+| --- | --- | --- |
+| `gh repo create <name> ...` fails with `GraphQL: Name already exists on this account (createRepository)` | A repo with that name already exists on your account. Run `gh repo view <user>/<name>` first to see what's in it, then pick one: reuse it (`git remote add origin <its-url>` and push, skipping `repo create` entirely), choose a different name for the new repo, or delete it with `gh repo delete <user>/<name> --yes` if it's confirmed empty and unwanted. Deleting needs the `delete_repo` scope first (`gh auth refresh -s delete_repo`), and `--yes` skips the confirmation prompt, so double-check the name. GitHub can restore a deleted repo for 90 days, with exceptions for fork networks — treat the delete as destructive anyway. | [gh repo create](https://cli.github.com/manual/gh_repo_create), [gh repo view](https://cli.github.com/manual/gh_repo_view), [gh repo delete](https://cli.github.com/manual/gh_repo_delete), [Restoring a deleted repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/restoring-a-deleted-repository) |
+| `git push` fails with `Permission denied (publickey)` on a `git@github.com:...` remote | GitHub rejected the SSH connection — most often no key is loaded in the agent, or the public key isn't added to your GitHub account. Either switch the remote to HTTPS and run `gh auth setup-git` (fast, if `gh` is already logged in), or set up an SSH key with the Uncommon commands above. | [Error: Permission denied (publickey)](https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey), [gh auth setup-git](https://cli.github.com/manual/gh_auth_setup-git) |
+
+> TODO(test): `gh auth refresh -s delete_repo` and `gh repo delete <user>/<name> --yes` come from the GitHub CLI manual and haven't been run for this page yet.
+
+## Files and locations
+
+| Path | Holds |
+| --- | --- |
+| `~/.ssh/id_ed25519`, `~/.ssh/id_ed25519.pub` | The private/public SSH key pair (Git Bash and PowerShell both read the same `~/.ssh/`). |
+| `~/.gitconfig` | Where `gh auth setup-git` writes the `credential.https://github.com.helper` entry. |

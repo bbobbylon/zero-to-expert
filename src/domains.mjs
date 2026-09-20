@@ -25,6 +25,7 @@
 /** @type {Domain[]} Every guide on the site, in sidebar order. */
 export const DOMAINS = [
   { slug: 'ai-agents', label: 'AI agents & coding with agents', group: 'Tech' },
+  { slug: 'git-github', label: 'Git & GitHub', group: 'Tech' },
   { slug: 'windows-macos', label: 'Windows & macOS', group: 'Tech' },
   { slug: 'aws', label: 'AWS infrastructure', group: 'Tech' },
   { slug: 'infrastructure', label: 'Infrastructure', group: 'Tech' },
