@@ -1,22 +1,399 @@
 /**
- * Theme tokens. Starlight styles everything from CSS custom properties, so a handful of
- * overrides re-skins the whole site without touching components.
+ * Theme: "The Manual".
  *
- * Direction: "workshop manual" — a brass accent on Starlight's neutral grays, the colour
- * of hardware and fittings on a bench. Placeholder identity; change the hues freely.
- * Contrast was kept high because people read these pages mid-job, often on a phone.
+ * The site is a set of field guides, so it looks like one: a well-made printed shop manual.
+ * Paper and ink, one spot colour (safety yellow), square corners, heavy rules, numbered
+ * chapters, a thumb index, and inspection stamps for fact-check status. Full rationale,
+ * palette, and contrast numbers: docs/UI-DESIGN.md.
+ *
+ * Starlight styles everything from CSS custom properties, so most of this file is token
+ * overrides; the rest is a thin layer of rules for chrome Starlight has no token for.
+ *
+ * House rules (each one exists because its opposite made the site look machine-made):
+ *   1. Two-colour printing. Ink on paper plus yellow. Yellow is a FILL (tabs, highlighter,
+ *      progress), and text on it is always ink. No gradients, no glows, no glass, no shadows.
+ *   2. Rules and numbers give structure, not boxes. No rounded cards, no pills.
+ *   3. Display type (Barlow Condensed) is for titles; monospace (IBM Plex Mono) is for labels,
+ *      numbers, and stamps. Body text stays the system sans: people read these pages mid-job,
+ *      often on a phone.
+ *   4. Every text/background pair meets WCAG AA. Re-measure after changing any colour here
+ *      (docs/UI-DESIGN.md, section 5).
+ *
+ * These rules are unlayered on purpose: Starlight's own CSS lives in cascade layers, and
+ * unlayered rules beat layered ones, so no `!important` or specificity tricks are needed.
  */
 
-/* Dark mode (Starlight's default :root) */
+/* ---------- Tokens: dark (the manual under a shop light) — Starlight's default :root ---------- */
 :root {
-  --sl-color-accent-low: #3b2e12;
-  --sl-color-accent: #c9973a;
-  --sl-color-accent-high: #f0d9a8;
+  /* Neutrals: plain charcoal. Text is paper-white, slightly warm, never pure white. */
+  --sl-color-white: #faf7ee;
+  --sl-color-gray-1: #ebe8de;
+  --sl-color-gray-2: #cfccc1;
+  --sl-color-gray-3: #9d9a90;
+  --sl-color-gray-4: #5a5c5f;
+  --sl-color-gray-5: #2c3035;
+  --sl-color-gray-6: #1c1f23;
+  --sl-color-black: #15171a;
+
+  /* Accent: safety yellow. In the dark theme it is also the link and label colour. */
+  --sl-color-accent-low: #3a2f00;
+  --sl-color-accent: #f2c200;
+  --sl-color-accent-high: #f7d23e;
+
+  /* House tokens (prefix zx = "zero to expert"). */
+  --zx-ink: #ebe8de; /* heavy rules, strong marks */
+  --zx-yellow: #f2c200; /* fills only */
+  --zx-on-yellow: #161512; /* the one text colour allowed on yellow */
+  --zx-label: #f2c200; /* small caps labels */
+  --zx-marker: color-mix(in srgb, #f2c200 22%, transparent); /* highlighter swipe */
+  --zx-red: #ff8a80; /* safety-critical */
+  --zx-surface: #1c1f23; /* tinted panels */
+  --zx-hairline: #33373d;
+
+  --zx-font-display: 'Barlow Condensed', 'Roboto Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --zx-font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
+  --zx-radius: 2px;
+
+  /* Code blocks and inline code use the same monospace as the labels. */
+  --sl-font-mono: 'IBM Plex Mono';
 }
 
-/* Light mode */
+/* ---------- Tokens: light (the manual on paper) ---------- */
 :root[data-theme='light'] {
-  --sl-color-accent-low: #f3e6c8;
-  --sl-color-accent: #8a5f14;
-  --sl-color-accent-high: #3d2a08;
+  --sl-color-white: #161512;
+  --sl-color-gray-1: #211f1b;
+  --sl-color-gray-2: #33312b;
+  --sl-color-gray-3: #5b584f;
+  --sl-color-gray-4: #8b877b;
+  --sl-color-gray-5: #c9c3b3;
+  --sl-color-gray-6: #e4dfd1;
+  --sl-color-gray-7: #ece8dc;
+  --sl-color-black: #f4f1e8;
+
+  /* On paper the "accent" is ink itself: links are ink with a highlighter swipe under them. */
+  --sl-color-accent-low: #fbe9a0;
+  --sl-color-accent: #161512;
+  --sl-color-accent-high: #161512;
+
+  --zx-ink: #161512;
+  --zx-label: #161512;
+  --zx-marker: #ffe27a;
+  --zx-red: #a8231b;
+  --zx-surface: #ece8dc;
+  --zx-hairline: #cfc9b9;
+}
+
+/* ---------- Page canvas ---------- */
+body {
+  background: var(--sl-color-bg);
+}
+
+::selection {
+  background: var(--zx-yellow);
+  color: var(--zx-on-yellow);
+}
+
+html {
+  scrollbar-color: var(--sl-color-gray-4) transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--zx-yellow);
+  outline-offset: 2px;
+  border-radius: var(--zx-radius);
+  /* A dark line inside the yellow ring keeps the ring visible on paper. */
+  box-shadow: 0 0 0 2px var(--zx-on-yellow);
+}
+
+/* ---------- Header: a printed running head ---------- */
+.page > header.header {
+  background: var(--sl-color-bg);
+  border-bottom: 2px solid var(--zx-ink);
+}
+/*
+ * Reading progress: on guide pages a yellow line fills left to right under the running head
+ * as the page scrolls, so a reader mid-job can see how much of a walkthrough is left. It is a
+ * CSS scroll-driven animation (no JavaScript); browsers without support simply have no line,
+ * and the reduced-motion block at the end of this file removes it.
+ */
+@supports (animation-timeline: scroll()) {
+  :root[data-has-sidebar] .page > header.header::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -6px;
+    height: 4px;
+    background: var(--zx-yellow);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    animation: zx-read-progress linear both;
+    animation-timeline: scroll(root block);
+    pointer-events: none;
+  }
+  @keyframes zx-read-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.site-title {
+  gap: 0.55rem;
+  color: var(--sl-color-white);
+  font-family: var(--zx-font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Search trigger: a ruled field, like a blank on a form. */
+site-search > button[data-open-modal] {
+  border-radius: var(--zx-radius);
+  border-color: var(--zx-hairline);
+  font-family: var(--zx-font-mono);
+  font-size: var(--sl-text-xs);
+}
+site-search > button[data-open-modal]:hover {
+  border-color: var(--zx-ink);
+}
+
+@media (min-width: 50rem) {
+  site-search dialog {
+    border: 2px solid var(--zx-ink);
+    border-radius: var(--zx-radius);
+    box-shadow: 6px 6px 0 color-mix(in srgb, var(--zx-ink) 25%, transparent);
+  }
+}
+#starlight__search {
+  --sl-search-corners: 2px;
+  --pagefind-ui-border: var(--zx-hairline);
+}
+/* The matched words are what the reader is scanning for: run the highlighter over them. */
+#starlight__search mark {
+  background: var(--zx-marker);
+  color: inherit;
+}
+
+/* Phone menu button: a yellow thumb tab. */
+.sl-menu-button,
+[data-theme='light'] .sl-menu-button {
+  border-radius: var(--zx-radius);
+  background: var(--zx-yellow);
+  color: var(--zx-on-yellow);
+  box-shadow: none;
+}
+
+/* ---------- Sidebar: the contents list ---------- */
+/* Part names ("Start here", "Tech", "Hands-on") are small monospace labels over a rule. */
+.sidebar-content .top-level > li > details > summary .large,
+.sidebar-content .top-level > li > .large {
+  color: var(--zx-label);
+  font-family: var(--zx-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sidebar-content .top-level > li + li {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--zx-hairline);
+}
+
+/* The current page is highlighted the way you would mark your place: with the yellow marker. */
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover,
+.sidebar-content a[aria-current='page']:focus {
+  border-radius: 0;
+  background: var(--zx-yellow);
+  color: var(--zx-on-yellow);
+  font-weight: 600;
+}
+
+.right-sidebar-panel h2 {
+  color: var(--zx-label);
+  font-family: var(--zx-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---------- Page titles and headings ---------- */
+/* The home page and the 404 page style their own title (src/components/Hero.astro). */
+:root:not([data-has-hero]) h1#_top {
+  font-family: var(--zx-font-display);
+  font-size: clamp(2.3rem, 1.5rem + 3.2vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+/* Each h2 opens a new section of the manual: a full-width ink rule, then a condensed heading. */
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
+  margin-top: 3rem;
+  padding-top: 0.85rem;
+  border-top: 2px solid var(--zx-ink);
+}
+.sl-markdown-content h2 {
+  font-family: var(--zx-font-display);
+  font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.sl-markdown-content h3 {
+  font-family: var(--zx-font-display);
+  font-size: clamp(1.35rem, 1.2rem + 0.6vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+/* ---------- Body content ---------- */
+/*
+ * Links: underlined, with a highlighter swipe along the baseline that fills the line on hover.
+ * The underline (not the colour) is what marks a link, so it never relies on colour alone.
+ */
+.sl-markdown-content a:not(:where(.not-content *)) {
+  background-image: linear-gradient(var(--zx-marker), var(--zx-marker));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 100% 0.42em;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: background-size 0.15s ease-out;
+}
+.sl-markdown-content a:hover:not(:where(.not-content *)) {
+  background-size: 100% 100%;
+}
+/* Links inside asides keep the aside's own colour and skip the marker. */
+.starlight-aside__content a {
+  background-image: none;
+}
+
+.sl-markdown-content :not(pre) > code:not(:where(.not-content *)) {
+  border: 1px solid var(--zx-hairline);
+  border-radius: var(--zx-radius);
+}
+
+/*
+ * Tables carry most of the cheat sheets. They are set like a printed spec table: a heavy ink
+ * rule above and below the header, hairlines between rows, no zebra striping, no box. No outer
+ * border on purpose — Starlight makes <table> a scrolling block (so wide tables work on
+ * phones), which means the element is wider than its rows and a border would not hug them.
+ */
+.sl-markdown-content :is(th, td):not(:where(.not-content *)) {
+  border-bottom: 1px solid var(--zx-hairline);
+}
+.sl-markdown-content th:not(:where(.not-content *)) {
+  border-top: 2px solid var(--zx-ink);
+  border-bottom: 2px solid var(--zx-ink);
+  color: var(--sl-color-white);
+  font-family: var(--zx-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sl-markdown-content tr:nth-child(2n):not(:where(.not-content *)) {
+  background: transparent;
+}
+
+/*
+ * Asides are the manual's NOTE / CAUTION / WARNING boxes: a ruled box with a label bar.
+ * Danger gets hazard stripes across the top, the one place the site uses a pattern.
+ */
+.starlight-aside {
+  border: 1.5px solid var(--sl-color-asides-border);
+  border-inline-start-width: 0.4rem;
+  border-radius: 0;
+}
+.starlight-aside__title {
+  font-family: var(--zx-font-mono);
+  font-size: var(--sl-text-sm);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.starlight-aside--danger {
+  border-top: 0;
+  background-image: repeating-linear-gradient(-45deg, var(--zx-yellow) 0 10px, #161512 10px 20px);
+  background-repeat: no-repeat;
+  background-size: 100% 8px;
+  padding-top: calc(1rem + 8px);
+}
+
+/* ---------- Status banner (from src/routeData.ts) ---------- */
+/* A yellow slip clipped to the top of the page. Ink on yellow in both themes. */
+.sl-banner {
+  border-bottom: 2px solid var(--zx-on-yellow);
+  background: var(--zx-yellow);
+  color: var(--zx-on-yellow);
+  font-family: var(--zx-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Buttons ---------- */
+.sl-link-button {
+  border-radius: var(--zx-radius);
+}
+.sl-link-button.primary,
+.sl-link-button.primary:hover {
+  border-color: var(--zx-on-yellow);
+  background: var(--zx-yellow);
+  color: var(--zx-on-yellow);
+  font-weight: 600;
+}
+
+/* Tabs (Windows / macOS variants): square, with an ink marker under the current tab. */
+starlight-tabs [role='tab'][aria-selected='true'] {
+  border-color: var(--zx-ink);
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+
+/* ---------- Previous / next pagination ---------- */
+.pagination-links a {
+  border: 0;
+  border-top: 2px solid var(--zx-ink);
+  border-radius: 0;
+  box-shadow: none;
+  padding-inline: 0;
+}
+.pagination-links a:hover {
+  border-color: var(--zx-ink);
+  background: var(--zx-marker);
+}
+.pagination-links .link-title {
+  font-family: var(--zx-font-display);
+  font-weight: 700;
+}
+
+/* ---------- Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Scroll-driven animations ignore duration, so the reading-progress line is removed outright. */
+  .page > header.header::before {
+    display: none;
+  }
+}
+
+/* ---------- Print ---------- */
+/* A manual should print like one: no yellow slabs of toner, no thumb tab, plain rules. */
+@media print {
+  .sl-banner {
+    border: 1px solid #000;
+    background: none;
+  }
 }

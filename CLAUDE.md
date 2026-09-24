@@ -35,6 +35,12 @@ Do not run `git commit`, `git push`, or create branches or repos. The owner runs
 | `src/content.config.ts` | Frontmatter schema and cross-field rules (the content contract). |
 | `src/routeData.ts` | Adds the "not fact-checked" banner from `status`. |
 | `src/plugins/base-links.mjs` | Adds the GitHub Pages base path to root links at build time. |
+| `src/pages/index.astro` | Home page: the manual's contents page. Computed from `domains.mjs` and page frontmatter; never list guides by hand. |
+| `src/components/` | UI chrome: Starlight overrides (`Header`, `Hero`, `PageTitle`, `Footer`, `MarkdownContent`), shared pieces (`LevelGauge`, `StatusChip`, `GuideHub`), and the home page's sections in `home/`. |
+| `src/site.mjs` | GitHub repo and contact URLs (from CI env vars, with a local fallback) and `OWNER_NAME`, the first name the site signs with. |
+| `src/lib/` | Build-time helpers. `links.ts` has `href()`: every internal link in a component must use it, because components skip the base-path plugin and the links validator. |
+| `src/styles/theme.css` | Design tokens and global styles. Rationale and rules: `docs/UI-DESIGN.md`. |
+| `docs/` | `SRS.md`, `ARCHITECTURE.md`, `UI-DESIGN.md`, `DEPLOYMENT.md`. Update the matching one when behavior, structure, UI, or the pipeline changes. |
 | `src/content/docs/<domain>/` | Content for one guide. |
 | `templates/` | Page templates. Copy them; don't edit them for one-off pages. |
 | `.github/workflows/deploy.yml` | CI/CD to GitHub Pages; calls the entry script. |

@@ -1,0 +1,122 @@
+---
+/**
+ * The six levels, drawn as a ruler: one heavy edge, six ticks, the level number at each
+ * tick and its gauge beneath.
+ *
+ * This is where the site's grading is explained without a paragraph of explanation. Level
+ * 0 shows an empty gauge, Level 5 a full one, and every guide page shows the same gauge
+ * under its title (`PageTitle.astro`), so a reader learns the scale once. Wording comes from
+ * `src/lib/levels.ts`, which mirrors the table in "How these guides work".
+ *
+ * On a phone the ruler turns vertical — ticks down the left, text beside them — because six
+ * columns of text do not fit, and a vertical rule reads the same way.
+ */
+import LevelGauge from '../LevelGauge.astro';
+import { LEVELS } from '../../lib/levels';
+---
+
+<ol class="ruler">
+  {
+    LEVELS.map(({ level, name, youCan }) => (
+      <li>
+        <span class="tick" aria-hidden="true">
+          {level}
+        </span>
+        <div class="body">
+          <LevelGauge filled={level} label={false} size="0.9rem" />
+          <h3>
+            <span class="sr-only">Level {level}: </span>
+            {name}
+          </h3>
+          <p>{youCan}</p>
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .ruler {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    margin: 0;
+    padding: 0;
+    border-top: 2px solid var(--zx-ink);
+    list-style: none;
+  }
+  li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0.5rem 1rem 1.25rem 0;
+  }
+  /* The tick: a short vertical mark hanging from the ruler's edge. */
+  li::before {
+    content: '';
+    display: block;
+    width: 2px;
+    height: 0.9rem;
+    background: var(--zx-ink);
+  }
+  .tick {
+    position: absolute;
+    top: 0.35rem;
+    left: 0.6rem;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    line-height: 1;
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  h3 {
+    margin: 0.15rem 0 0;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  p {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+    line-height: 1.5;
+  }
+
+  /* Vertical ruler on narrow screens: the heavy edge runs down the left, ticks stick out from it. */
+  @media (max-width: 40rem) {
+    .ruler {
+      grid-template-columns: 1fr;
+      border-top: 0;
+      border-left: 2px solid var(--zx-ink);
+    }
+    li {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0;
+      padding: 0 0 1.25rem;
+    }
+    li::before {
+      flex: none;
+      width: 0.9rem;
+      height: 2px;
+      margin-top: 0.55rem;
+    }
+    .tick {
+      position: static;
+      flex: none;
+      width: 1.5rem;
+      margin: 0.25rem 0 0 0.35rem;
+    }
+    .body {
+      padding-left: 0.25rem;
+    }
+  }
+</style>

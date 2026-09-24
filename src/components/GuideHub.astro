@@ -1,0 +1,227 @@
+---
+/**
+ * Chapter contents: the list under a guide overview's title of what the chapter holds.
+ *
+ * Rendered by `PageTitle.astro` on `pageType: overview` pages only. A guide's overview is
+ * its front door, and before this it was a bare Markdown page: nothing showed how much of
+ * the chapter exists yet or offered a way in. This list answers both from the same
+ * build-time model the contents page uses (`src/lib/guide-stats.ts`), so the two can never
+ * disagree:
+ *
+ *   - the six levels, 0 to 5, one ruled line each. A level that has a page is a link and
+ *     carries that page's fact-check tag; a level with no page says so instead of linking
+ *     nowhere.
+ *   - what else is in the chapter: walkthroughs, concepts, and the cheat sheet (a link once
+ *     it is written), plus the hazard mark if any page is safety-critical.
+ *
+ * It is site chrome, not content: the overview's Markdown is untouched, so the Phase 2 app
+ * can render the same file and build (or skip) its own list.
+ */
+import LevelGauge from './LevelGauge.astro';
+import StatusChip from './StatusChip.astro';
+import { getSiteStats } from '../lib/guide-stats';
+import { LEVELS } from '../lib/levels';
+import { entryHref } from '../lib/links';
+
+interface Props {
+  /** Guide slug from `src/domains.mjs`, i.e. the overview page's `domain`. */
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const guide = (await getSiteStats()).guides.find((candidate) => candidate.slug === slug);
+const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
+---
+
+{
+  guide && (
+    <section class="hub" aria-labelledby="chapter-contents" data-pagefind-ignore>
+      <h2 id="chapter-contents">
+        In this chapter
+        <span class="summary">
+          {guide.levelsWritten.length} of {LEVELS.length} levels written · {plural(guide.writtenPages, 'page')} ·{' '}
+          {guide.verifiedPages} checked
+        </span>
+      </h2>
+
+      <ol class="levels">
+        {LEVELS.map(({ level, name }) => {
+          const page = guide.levelPages[level];
+          const inner = (
+            <Fragment>
+              <span class="num" aria-hidden="true">
+                {level}
+              </span>
+              <LevelGauge filled={level} label={false} size="0.8rem" />
+              <span class="name">
+                <span class="sr-only">Level {level}: </span>
+                {name}
+              </span>
+              <span class="leader" aria-hidden="true" />
+              {page ? <StatusChip status={page.status} /> : <span class="state">Not written yet</span>}
+            </Fragment>
+          );
+          return (
+            <li>
+              {page ? (
+                <a class="row written" href={entryHref(page.id)}>
+                  {inner}
+                </a>
+              ) : (
+                <span class="row">{inner}</span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+
+      <ul class="also">
+        {guide.walkthroughs > 0 && <li>{plural(guide.walkthroughs, 'walkthrough')}</li>}
+        {guide.concepts > 0 && <li>{plural(guide.concepts, 'concept page')}</li>}
+        {guide.cheatSheet ? (
+          <li>
+            <a href={entryHref(guide.cheatSheet.id)}>Cheat sheet</a> <StatusChip status={guide.cheatSheet.status} />
+          </li>
+        ) : (
+          <li class="muted">Cheat sheet not written yet</li>
+        )}
+        {guide.safetyCritical && (
+          <li class="hazard">
+            <span aria-hidden="true">▲ </span>Has safety-critical pages
+          </li>
+        )}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .hub {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  h2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--zx-ink);
+    color: var(--zx-label);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+  .summary {
+    color: var(--sl-color-gray-3);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  .levels {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .levels li {
+    margin: 0;
+    border-bottom: 1px solid var(--zx-hairline);
+  }
+  .row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.55rem 0;
+    color: var(--sl-color-gray-3);
+    text-decoration: none;
+  }
+  .num {
+    flex: none;
+    width: 1rem;
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+  }
+  .row > :global(.gauge) {
+    flex: none;
+    align-self: center;
+  }
+  .name {
+    font-family: var(--zx-font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  .leader {
+    flex: 1;
+    min-width: 1rem;
+    align-self: flex-end;
+    margin-bottom: 0.4em;
+    border-bottom: 2px dotted var(--sl-color-gray-4);
+  }
+  .state {
+    font-family: var(--zx-font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .written {
+    color: var(--sl-color-white);
+  }
+  .written .num {
+    color: var(--zx-label);
+  }
+  .written:hover .name,
+  .written:focus-visible .name {
+    background-image: linear-gradient(var(--zx-marker), var(--zx-marker));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 0.45em;
+  }
+  /* The gauge is drawn in ink; on an unwritten row it fades with the rest of the line. */
+  .row:not(.written) > :global(.gauge) {
+    opacity: 0.45;
+  }
+
+  .also {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--sl-color-gray-2);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    line-height: 1.6;
+  }
+  .also li {
+    margin: 0;
+  }
+  .also a {
+    color: var(--sl-color-white);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .also a:hover {
+    background: var(--zx-marker);
+  }
+  .muted {
+    color: var(--sl-color-gray-3);
+  }
+  .hazard {
+    color: var(--zx-red);
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+/**
+ * A page's fact-check status, as a small printed tag or as a full inspection stamp.
+ *
+ * The site's core promise is that every page says whether it has been fact-checked
+ * (see `src/routeData.ts` for the full-width slip at the top of unchecked pages). This tag
+ * carries the same promise anywhere a page is *listed* — the contents page, a chapter's own
+ * contents, the jobs list — so a draft never looks more trustworthy in a list than it does
+ * on its own page.
+ *
+ * `stamp` draws the larger version used once per page, under the title: the mark an
+ * inspector leaves on a document. A verified page's stamp names who checked it and when,
+ * because on this site that is a real person doing a real check (CLAUDE.md, "Fact-checking
+ * rules"), not a badge.
+ *
+ * Status is never colour alone: each state has its own word AND its own border — dashed
+ * (planned), solid (draft), double (in review), filled (verified).
+ */
+import { STATUS_LABELS, type Status } from '../lib/guide-stats';
+import { OWNER_NAME } from '../site.mjs';
+
+interface Props {
+  status: Status;
+  /** Verification date (YYYY-MM-DD), shown on a verified stamp. */
+  detail?: string;
+  /** Draw the large inspection stamp instead of the list tag. */
+  stamp?: boolean;
+}
+
+const { status, detail, stamp = false } = Astro.props;
+
+/** Second line of the stamp: what the status means for the reader, in the owner's words. */
+const STAMP_LINES: Record<Status, string> = {
+  planned: 'Not written yet',
+  draft: 'Not checked yet',
+  review: 'Being checked now',
+  verified: detail ? `By ${OWNER_NAME} · ${detail}` : `By ${OWNER_NAME}`,
+};
+---
+
+{
+  stamp ? (
+    <span class:list={['stamp', status]}>
+      <span class="word">{status === 'verified' ? 'Checked' : STATUS_LABELS[status]}</span>
+      <span class="line">{STAMP_LINES[status]}</span>
+    </span>
+  ) : (
+    <span class:list={['tag', status]}>{STATUS_LABELS[status]}</span>
+  )
+}
+
+<style>
+  .tag,
+  .stamp {
+    --status-color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.1em 0.5em;
+    border: 1.5px solid var(--status-color);
+    border-radius: var(--zx-radius);
+    color: var(--status-color);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+  }
+
+  /* The stamp sits slightly off-square, the way a hand-pressed stamp lands. */
+  .stamp {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.35rem 0.7rem 0.4rem;
+    border: 2px solid var(--status-color);
+    border-radius: var(--zx-radius);
+    outline: 1px solid var(--status-color);
+    outline-offset: 2px;
+    color: var(--status-color);
+    line-height: 1.25;
+    transform: rotate(-2deg);
+  }
+  .stamp .word {
+    font-size: 1.05rem;
+    letter-spacing: 0.14em;
+  }
+  .stamp .line {
+    font-size: 0.66rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+  }
+
+  /* One border style per state, so the four differ without relying on colour. */
+  .planned {
+    border-style: dashed;
+  }
+  .review {
+    --status-color: var(--sl-color-blue-high);
+  }
+  .tag.review {
+    border-width: 3px;
+    border-style: double;
+  }
+  .stamp.review {
+    border-width: 4px;
+    border-style: double;
+  }
+  .draft {
+    --status-color: var(--sl-color-orange-high);
+  }
+  .verified {
+    --status-color: var(--sl-color-green-high);
+    background: var(--status-color);
+    color: var(--sl-color-black);
+  }
+
+  @media (prefers-reduced-motion: reduce), print {
+    .stamp {
+      transform: none;
+    }
+  }
+</style>

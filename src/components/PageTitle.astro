@@ -1,0 +1,218 @@
+---
+/**
+ * Page title block: the chapter line, the title, the spec strip, and the inspection stamp.
+ *
+ * Registered as the `PageTitle` override in `astro.config.mjs`. Before this, a page's
+ * level, difficulty, time, and verification date lived in frontmatter where only the build
+ * could see them. Here they are set under the title the way a manual page prints its
+ * header block, so a reader knows what kind of page this is and how far to trust it
+ * before reading a word:
+ *
+ *   Chapter 04 · AWS infrastructure / Walkthrough        <- chapter line, with a yellow tab
+ *   Set up a static site                                 <- title
+ *   LEVEL ▮▮▯▯▯ 2 · Intermediate  DIFFICULTY moderate  TIME 1-2 h   [ DRAFT stamp ]
+ *
+ * The stamp complements `src/routeData.ts` rather than replacing it: the yellow slip at
+ * the top of the page is the loud warning for unchecked pages; the stamp is the quiet,
+ * always-present record — including on verified pages, which get no slip but do get the
+ * owner's name and the date he checked them.
+ *
+ * Pages about the site itself (`domain: meta`) show the title alone. Guide overview pages
+ * additionally get the chapter's own contents from `GuideHub.astro`.
+ */
+import GuideHub from './GuideHub.astro';
+import LevelGauge from './LevelGauge.astro';
+import StatusChip from './StatusChip.astro';
+import { chapterLabel, chapterNumber, guideLabel, type Status } from '../lib/guide-stats';
+import { LEVELS } from '../lib/levels';
+import { META_DOMAIN } from '../domains.mjs';
+
+/** Starlight's id for the page's <h1>; its "skip to content" link and TOC both target it. */
+const PAGE_TITLE_ID = '_top';
+
+const { data } = Astro.locals.starlightRoute.entry;
+const isGuidePage = data.domain !== META_DOMAIN;
+
+const PAGE_TYPE_LABELS: Record<string, string> = {
+  overview: 'Chapter overview',
+  level: 'Level',
+  walkthrough: 'Walkthrough',
+  cheatsheet: 'Cheat sheet',
+  explanation: 'Concept',
+  reference: 'Reference',
+};
+
+const levelInfo = data.level !== undefined ? LEVELS[data.level] : undefined;
+const verifiedOn =
+  data.status === 'verified' && data.lastVerified ? data.lastVerified.toISOString().slice(0, 10) : undefined;
+const chapter = isGuidePage ? chapterLabel(chapterNumber(data.domain)) : undefined;
+/** Overview pages have no level, difficulty, or time: they get the stamp alone. */
+const hasSpecs = Boolean(levelInfo || data.difficulty || data.time || data.safetyCritical);
+---
+
+{
+  isGuidePage && (
+    <p class="chapter-line" data-pagefind-ignore>
+      <span class="tab">
+        <span class="sr-only">Chapter </span>
+        {chapter}
+      </span>
+      <span class="guide">{guideLabel(data.domain)}</span>
+      <span class="sep" aria-hidden="true">
+        /
+      </span>
+      <span class="type">{PAGE_TYPE_LABELS[data.pageType] ?? data.pageType}</span>
+    </p>
+  )
+}
+
+<h1 id={PAGE_TITLE_ID}>{data.title}</h1>
+
+{
+  isGuidePage && (
+    <div class="header-block" data-pagefind-ignore>
+      {hasSpecs && (
+      <dl class="specs" aria-label="About this page">
+        {levelInfo && (
+          <div>
+            <dt>Level</dt>
+            <dd class="level">
+              <LevelGauge filled={levelInfo.level} label={false} size="0.85rem" />
+              <span>
+                {levelInfo.level} · {levelInfo.name}
+              </span>
+            </dd>
+          </div>
+        )}
+        {data.difficulty && (
+          <div>
+            <dt>Difficulty</dt>
+            <dd class:list={['difficulty', data.difficulty]}>{data.difficulty}</dd>
+          </div>
+        )}
+        {data.time && (
+          <div>
+            <dt>Time</dt>
+            <dd>{data.time}</dd>
+          </div>
+        )}
+        {data.safetyCritical && (
+          <div>
+            <dt>Safety</dt>
+            <dd class="hazard">
+              <span aria-hidden="true">▲ </span>Safety-critical
+            </dd>
+          </div>
+        )}
+      </dl>
+      )}
+      <StatusChip stamp status={data.status as Status} detail={verifiedOn} />
+    </div>
+  )
+}
+
+{/* A chapter's front door also lists what the chapter contains, with links in. */}
+{isGuidePage && data.pageType === 'overview' && <GuideHub slug={data.domain} />}
+
+<style>
+  @layer starlight.core {
+    h1 {
+      margin-top: 1rem;
+      font-size: var(--sl-text-h1);
+      line-height: var(--sl-line-height-headings);
+      font-weight: 600;
+      color: var(--sl-color-white);
+    }
+  }
+
+  .chapter-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.6rem;
+    margin: 1.25rem 0 -0.35rem;
+    color: var(--sl-color-gray-2);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+  /* The thumb tab: chapter number, ink on a block of yellow. */
+  .tab {
+    display: inline-block;
+    padding: 0.3em 0.55em;
+    background: var(--zx-yellow);
+    color: var(--zx-on-yellow);
+    font-size: var(--sl-text-sm);
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .guide {
+    color: var(--sl-color-white);
+  }
+  .sep {
+    color: var(--sl-color-gray-3);
+  }
+  .type {
+    font-weight: 400;
+  }
+
+  .header-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: 1.25rem;
+    padding: 0.85rem 0 1rem;
+    border-top: 1px solid var(--zx-hairline);
+    border-bottom: 1px solid var(--zx-hairline);
+  }
+  .specs {
+    display: flex;
+    flex: 1 1 18rem;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    margin: 0;
+  }
+  .specs > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  dt {
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  dd {
+    margin: 0;
+    color: var(--sl-color-white);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .level {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .difficulty {
+    text-transform: capitalize;
+  }
+  .difficulty.hard,
+  .difficulty.expert,
+  .hazard {
+    color: var(--zx-red);
+  }
+
+  /* Leave the stamp its rotation room. */
+  .header-block > :global(.stamp) {
+    margin: 0.25rem 0.35rem 0.25rem 0;
+  }
+</style>

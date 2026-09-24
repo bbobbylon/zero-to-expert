@@ -1,0 +1,202 @@
+---
+/**
+ * Home page: the manual's contents page.
+ *
+ * Why this is an `.astro` page and not `src/content/docs/index.md`: the home page used to
+ * be a hand-typed list of guides, which had to be edited every time `src/domains.mjs`
+ * changed. Everything here is computed from the content instead (see
+ * `src/lib/guide-stats.ts`), so adding a guide or a page updates the contents by itself.
+ *
+ * It reads top to bottom the way the front of a printed manual does:
+ *   cover (`src/components/Hero.astro`, from the `hero` frontmatter below) →
+ *   a note from the owner → contents, in two parts → the level ruler → the jobs index →
+ *   the inspection log.
+ * The `#tech`, `#hands-on`, and `#fact-check` anchors are linked from the header nav and
+ * the footer; keep them when moving sections around.
+ *
+ * It renders inside `<StarlightPage>`, so it gets the same header, search, theme toggle,
+ * and footer as every guide page, and its frontmatter is validated by the same schema in
+ * `src/content.config.ts`.
+ *
+ * Portability note for the Phase 2 app: this page is site chrome, not content. No guide
+ * Markdown depends on it, and the app is expected to build its own home screen from the
+ * same two inputs — `domains.mjs` and page frontmatter.
+ *
+ * Links here do not pass through the Markdown base-path plugin or the links validator, so
+ * every internal link MUST go through `href()` / `entryHref()` from `src/lib/links.ts`.
+ */
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+import ContentsEntry from '../components/home/ContentsEntry.astro';
+import InspectionLog from '../components/home/InspectionLog.astro';
+import LevelRuler from '../components/home/LevelRuler.astro';
+import OwnerNote from '../components/home/OwnerNote.astro';
+import SectionHeading from '../components/home/SectionHeading.astro';
+import WalkthroughList from '../components/home/WalkthroughList.astro';
+
+import { GROUPS } from '../domains.mjs';
+import { getSiteStats } from '../lib/guide-stats';
+import { LEVELS } from '../lib/levels';
+import { href } from '../lib/links';
+
+const stats = await getSiteStats();
+
+/** Anchor id and printed title for each part of the manual, in `GROUPS` order. */
+const PARTS = {
+  Tech: { id: 'tech', number: 1, title: 'Tech' },
+  'Hands-on': { id: 'hands-on', number: 2, title: 'Hands-on' },
+} as const;
+
+const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Zero to Expert',
+    description: 'Field guides from first steps to mastery in tech, trades, and survival. Every page says whether it has been fact-checked.',
+    template: 'splash',
+    domain: 'meta',
+    pageType: 'overview',
+    status: 'verified',
+    hero: {
+      title: 'Zero to Expert',
+      tagline:
+        'Field guides from first steps to mastery, written so I have one place to send people when they ask how something works. Every page says whether I have checked it yet.',
+      actions: [
+        { text: 'How the guides work', link: href('/about/how-guides-work/'), variant: 'primary' },
+        { text: 'Contents', link: href('/#contents'), variant: 'secondary' },
+      ],
+    },
+  }}
+>
+  {/* `not-content` opts out of Starlight's Markdown typography so the contents page styles itself. */}
+  <div class="front-matter not-content">
+    <OwnerNote stats={stats} />
+
+    <section aria-labelledby="contents">
+      <SectionHeading
+        id="contents"
+        number="1"
+        title="Contents"
+        note={`${plural(stats.guides.length, 'chapter')} in two parts · ${plural(stats.totalPages, 'page')}`}
+      />
+      <div class="parts">
+        {
+          GROUPS.map((group) => {
+            const part = PARTS[group];
+            const chapters = stats.guides.filter((guide) => guide.group === group);
+            return (
+              <section aria-labelledby={part.id}>
+                <h3 id={part.id} class="part">
+                  <span class="part-number">Part {part.number}</span>
+                  {part.title}
+                  <span class="part-count">{plural(chapters.length, 'chapter')}</span>
+                </h3>
+                <ol class="chapters">
+                  {chapters.map((guide) => (
+                    <ContentsEntry guide={guide} />
+                  ))}
+                </ol>
+              </section>
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <section aria-labelledby="levels">
+      <SectionHeading
+        id="levels"
+        number="2"
+        title="The six levels"
+        note={`Same ladder in every chapter · Level 0 to ${LEVELS.length - 1}`}
+      />
+      <LevelRuler />
+    </section>
+
+    <div class="back">
+      <section aria-labelledby="jobs">
+        <SectionHeading
+          id="jobs"
+          number="3"
+          title="Jobs"
+          note={`${plural(stats.walkthroughs.length, 'walkthrough')} · one job per page`}
+        />
+        <WalkthroughList walkthroughs={stats.walkthroughs} />
+      </section>
+
+      <section aria-labelledby="fact-check">
+        <SectionHeading id="fact-check" number="4" title="Inspection log" note="Where every page stands today" />
+        <InspectionLog stats={stats} />
+      </section>
+    </div>
+  </div>
+</StarlightPage>
+
+<style>
+  .front-matter {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3.5rem, 2.5rem + 3vw, 5.5rem);
+    margin-top: 3rem;
+  }
+
+  /* Contents in two columns once there is room: Part 1 beside Part 2, the way a wide page sets them. */
+  .parts {
+    display: grid;
+    gap: 2.5rem 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .parts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+  }
+  .part {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.9rem;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--zx-ink);
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    scroll-margin-top: 2.75rem;
+  }
+  .part-number {
+    color: var(--zx-label);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .part-count {
+    margin-inline-start: auto;
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+  .chapters {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .back {
+    display: grid;
+    gap: clamp(3.5rem, 2.5rem + 3vw, 5.5rem) 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .back {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      align-items: start;
+    }
+  }
+</style>

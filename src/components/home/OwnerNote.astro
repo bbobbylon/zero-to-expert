@@ -1,0 +1,152 @@
+---
+/**
+ * A short note from the owner, printed inside the front cover of the manual.
+ *
+ * This is where the site says what it is for, in the first person: one trustworthy place
+ * to send family, friends, and coworkers when they ask how something works. It replaces a
+ * row of headline statistics. The numbers still exist — they are in the margin here and in
+ * the inspection log further down — but a manual opens with a word from whoever wrote it,
+ * not with a scoreboard.
+ *
+ * The wording is deliberately plain and stays within what the owner has actually said
+ * about the site. Do not add biography here.
+ */
+import type { SiteStats } from '../../lib/guide-stats';
+import { OWNER_NAME } from '../../site.mjs';
+
+interface Props {
+  stats: SiteStats;
+}
+
+const { stats } = Astro.props;
+
+/** The margin figures: the same honest counts the inspection log breaks down. */
+const figures = [
+  { value: stats.guides.length, label: 'chapters' },
+  { value: stats.writtenPages, label: 'pages written' },
+  { value: stats.statusCounts.verified, label: 'pages checked' },
+];
+---
+
+<section class="note" aria-labelledby="owner-note">
+  <div class="text">
+    <h2 id="owner-note">A note from {OWNER_NAME}</h2>
+    <p>
+      I know most of what is in here already. What I did not have was one place I trusted enough to send
+      people to — family, friends, coworkers — when they asked how something works or how to do it
+      themselves. So I am writing it down once, properly, here.
+    </p>
+    <p>
+      Every chapter climbs the same six levels, from Orientation to Mastery, and every page carries a stamp
+      that says whether I have checked it against its sources yet. Most pages have not been checked yet.
+      The stamp will say so until they are.
+    </p>
+    <p class="signature" aria-hidden="true">— {OWNER_NAME}</p>
+  </div>
+
+  <dl class="figures" aria-label="Site figures">
+    {
+      figures.map((figure) => (
+        <div>
+          <dd>{figure.value}</dd>
+          <dt>{figure.label}</dt>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  /* No rule above: the cover already closes with one (src/components/Hero.astro). */
+  .note {
+    display: grid;
+    gap: 2rem 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--zx-hairline);
+  }
+  @media (min-width: 56rem) {
+    .note {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+  }
+
+  .text {
+    max-width: 62ch;
+  }
+  h2 {
+    margin: 0 0 0.9rem;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+  }
+  p {
+    margin: 0 0 0.9rem;
+    color: var(--sl-color-gray-1);
+    font-size: var(--sl-text-base);
+    line-height: 1.65;
+  }
+  .signature {
+    margin: 1.2rem 0 0;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  /* Margin figures: tabular monospace, ruled like a small table in the gutter. */
+  .figures {
+    display: flex;
+    gap: 0;
+    margin: 0;
+    border-top: 1px solid var(--zx-hairline);
+  }
+  .figures > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 6.5rem;
+    padding: 0.85rem 1rem 0.85rem 0;
+  }
+  .figures > div + div {
+    padding-left: 1rem;
+    border-left: 1px solid var(--zx-hairline);
+  }
+  dd {
+    margin: 0;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-size: 2rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  dt {
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  @media (min-width: 56rem) {
+    .figures {
+      flex-direction: column;
+      min-width: 11rem;
+      border-top: 0;
+      border-left: 2px solid var(--zx-ink);
+    }
+    .figures > div,
+    .figures > div + div {
+      padding: 0 0 0.9rem 1.25rem;
+      border-left: 0;
+    }
+    .figures > div + div {
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--zx-hairline);
+    }
+  }
+</style>

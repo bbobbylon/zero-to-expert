@@ -1,0 +1,141 @@
+---
+/**
+ * The jobs list: every walkthrough on the site, one ruled line each, set like the job
+ * index at the back of a service manual — title, chapter, time, difficulty, and always
+ * the fact-check status.
+ *
+ * The status tag is not optional decoration. A draft walkthrough must not look more
+ * trustworthy in this list than it does on its own page, where `src/routeData.ts` puts a
+ * yellow warning slip across the top.
+ *
+ * Rows carry no index number of their own: walkthrough titles may already be numbered by
+ * their guide ("1. Create an account"), and a second number beside that reads as a bug.
+ */
+import type { CollectionEntry } from 'astro:content';
+import StatusChip from '../StatusChip.astro';
+import { chapterLabel, chapterNumber, guideLabel, type Status } from '../../lib/guide-stats';
+import { entryHref } from '../../lib/links';
+
+interface Props {
+  walkthroughs: CollectionEntry<'docs'>[];
+  /** Show at most this many rows. */
+  limit?: number;
+}
+
+const { walkthroughs, limit = 8 } = Astro.props;
+const rows = walkthroughs.slice(0, limit);
+const hidden = walkthroughs.length - rows.length;
+---
+
+{
+  rows.length === 0 ? (
+    <p class="empty">No jobs written yet. They are listed here as soon as the first one exists.</p>
+  ) : (
+    <ol class="jobs">
+      {rows.map((entry) => (
+        <li>
+          <a href={entryHref(entry.id)}>
+            <span class="head">
+              <span class="title">{entry.data.title}</span>
+              <StatusChip status={entry.data.status as Status} />
+            </span>
+            <span class="specs">
+              <span class="spec">
+                <span class="chapter">Ch. {chapterLabel(chapterNumber(entry.data.domain))}</span>{' '}
+                {guideLabel(entry.data.domain)}
+              </span>
+              {entry.data.difficulty && (
+                <span class:list={['spec', 'difficulty', entry.data.difficulty]}>
+                  <span class="key">Difficulty</span> {entry.data.difficulty}
+                </span>
+              )}
+              {entry.data.time && (
+                <span class="spec">
+                  <span class="key">Time</span> {entry.data.time}
+                </span>
+              )}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  )
+}
+{hidden > 0 && <p class="more">…and {hidden} more, listed in their chapters.</p>}
+
+<style>
+  .jobs {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    margin: 0;
+    border-bottom: 1px solid var(--zx-hairline);
+  }
+  a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.8rem 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .title {
+    min-width: 0;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  a:hover .title,
+  a:focus-visible .title {
+    background-image: linear-gradient(var(--zx-marker), var(--zx-marker));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 0.45em;
+  }
+  .specs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3rem 1.25rem;
+    color: var(--sl-color-gray-2);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    line-height: 1.5;
+  }
+  .chapter {
+    color: var(--zx-label);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .key {
+    color: var(--sl-color-gray-3);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .difficulty {
+    text-transform: capitalize;
+  }
+  .difficulty.hard,
+  .difficulty.expert {
+    color: var(--zx-red);
+    font-weight: 600;
+  }
+
+  .empty,
+  .more {
+    margin: 0.9rem 0 0;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+</style>

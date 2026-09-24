@@ -1,0 +1,64 @@
+---
+/**
+ * Level gauge: a guide level (0-5) drawn as five marks, filled up to the level.
+ *
+ * It reads like the scale on a tool — a fuel gauge, a torque setting, the ticks on a rule —
+ * which suits a manual better than a star rating and means the same exact thing: Level 0
+ * (Orientation) is an empty gauge, Level 5 (Mastery) is a full one. Level numbers and names
+ * come from `src/lib/levels.ts`.
+ *
+ * The marks are decorative (`aria-hidden`). Screen readers get one plain sentence instead,
+ * unless the caller already says the level in nearby text and passes `label={false}`.
+ */
+import { MAX_LEVEL } from '../lib/levels';
+
+interface Props {
+  /** How many marks to fill, 0-5. */
+  filled: number;
+  /** Screen-reader text. Pass `false` when adjacent text already states the level. */
+  label?: string | false;
+  /** Height of one mark as a CSS size. */
+  size?: string;
+}
+
+const { filled, label = `Level ${filled} of ${MAX_LEVEL}`, size = '0.8em' } = Astro.props;
+const marks = Array.from({ length: MAX_LEVEL }, (_, index) => index < filled);
+---
+
+<span class="gauge" style={`--mark-size:${size}`}>
+  {label && <span class="sr-only">{label}</span>}
+  <span class="row" aria-hidden="true">
+    {marks.map((isFilled) => <span class:list={['mark', { filled: isFilled }]} />)}
+  </span>
+</span>
+
+<style>
+  .gauge {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+  .row {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .mark {
+    width: calc(var(--mark-size) * 0.55);
+    height: var(--mark-size);
+    border: 1.5px solid var(--zx-ink);
+    background: transparent;
+  }
+  .mark.filled {
+    background: var(--zx-ink);
+  }
+  /* Forced-colours mode drops backgrounds, which would make every gauge look empty. */
+  @media (forced-colors: active) {
+    .mark {
+      border-color: CanvasText;
+    }
+    .mark.filled {
+      background: CanvasText;
+      forced-color-adjust: none;
+    }
+  }
+</style>

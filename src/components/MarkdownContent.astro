@@ -1,0 +1,37 @@
+---
+/**
+ * Wrapper around every page's rendered Markdown, plus one accessibility fix for tables.
+ *
+ * Registered as the `MarkdownContent` override in `astro.config.mjs`. The markup is
+ * Starlight 0.42.2's, unchanged; after a Starlight upgrade, compare it with
+ * `node_modules/@astrojs/starlight/dist/components/MarkdownContent.astro`.
+ *
+ * The fix: Starlight lets a wide table scroll sideways inside itself. On a phone, or at
+ * high browser zoom, cheat-sheet tables do exactly that — and a scrolling box that cannot
+ * take keyboard focus cannot be scrolled without a mouse or touch screen (WCAG 2.1.1; axe
+ * rule `scrollable-region-focusable`, found by the 2026-09-20 audit). Markdown has no way
+ * to put `tabindex` on a table, so the script below adds it, only while a table actually
+ * overflows. The content files stay plain Markdown, so the Phase 2 app is unaffected.
+ */
+import '@astrojs/starlight/style/markdown.css';
+---
+
+<div class="sl-markdown-content"><slot /></div>
+
+<script>
+  /** Make sideways-scrolling tables focusable so arrow keys can scroll them. */
+  function markScrollableTables(): void {
+    for (const table of document.querySelectorAll<HTMLTableElement>('.sl-markdown-content table')) {
+      if (table.scrollWidth > table.clientWidth) table.setAttribute('tabindex', '0');
+      else table.removeAttribute('tabindex');
+    }
+  }
+
+  markScrollableTables();
+  // Width changes (rotation, zoom, window resize) can start or stop a table overflowing.
+  window.addEventListener('resize', markScrollableTables);
+  // Tables inside a closed tab have no width until their tab is shown.
+  document.addEventListener('click', (event) => {
+    if ((event.target as Element).closest('[role="tab"]')) requestAnimationFrame(markScrollableTables);
+  });
+</script>

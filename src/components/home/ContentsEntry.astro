@@ -1,0 +1,164 @@
+---
+/**
+ * One line of the contents page: one chapter (guide) of the manual.
+ *
+ * Set like a printed contents entry — chapter number in the margin, the title, a dotted
+ * leader, and the figures at the right edge — with the one thing paper cannot do: the
+ * line is a link into the chapter. The description sits under the title in smaller type.
+ *
+ * The figures are the honest ones. "6 pages · 0 checked" says how much exists AND how much
+ * of it the owner has verified, and the tag at the end is the fact-check status of the
+ * overview page the line links to (see `StatusChip.astro` for why every listed page shows
+ * its status). A chapter with nothing written yet says so in place of a page count.
+ *
+ * Safety-critical chapters (brakes, mains voltage, gas...) get a printed hazard mark
+ * beside the title, in red text as well as symbol so it is never colour alone.
+ */
+import StatusChip from '../StatusChip.astro';
+import { chapterLabel, type GuideStats } from '../../lib/guide-stats';
+import { href } from '../../lib/links';
+
+interface Props {
+  guide: GuideStats;
+}
+
+const { guide } = Astro.props;
+const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
+const figures =
+  guide.writtenPages === 0
+    ? 'Not written yet'
+    : `${plural(guide.writtenPages, 'page')} · ${guide.verifiedPages} checked`;
+---
+
+<li class:list={['entry', { empty: guide.writtenPages === 0 }]}>
+  <a href={href(`/${guide.slug}/`)}>
+    <span class="number" aria-hidden="true">{chapterLabel(guide.position)}</span>
+    <span class="sr-only">Chapter {guide.position}: </span>
+    <span class="title">
+      {guide.label}
+      {
+        guide.safetyCritical && (
+          <span class="hazard">
+            <span aria-hidden="true">▲ </span>Safety-critical
+          </span>
+        )
+      }
+    </span>
+    <span class="leader" aria-hidden="true"></span>
+    <span class="end">
+      <span class="figures">{figures}</span>
+      <StatusChip status={guide.overviewStatus} />
+    </span>
+  </a>
+  {guide.description && <p class="description">{guide.description}</p>}
+</li>
+
+<style>
+  .entry {
+    margin: 0;
+    padding: 0.75rem 0 0.8rem;
+    border-bottom: 1px solid var(--zx-hairline);
+  }
+  /*
+   * One line, like a printed contents entry: a long title wraps inside its own column and
+   * the leader runs from its last line to the figures. (Flex wrapping would instead drop
+   * the figures under the number, because it wraps by max-content width.)
+   */
+  a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    color: var(--sl-color-white);
+    text-decoration: none;
+  }
+  .number {
+    flex: none;
+    width: 2.4rem;
+    color: var(--zx-label);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .title {
+    font-family: var(--zx-font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.15;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  a:hover .title,
+  a:focus-visible .title {
+    background-image: linear-gradient(var(--zx-marker), var(--zx-marker));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 0.45em;
+  }
+  .hazard {
+    margin-inline-start: 0.4rem;
+    color: var(--zx-red);
+    font-family: var(--zx-font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: 0.15em;
+    white-space: nowrap;
+  }
+  .leader {
+    flex: 1 1 2rem;
+    min-width: 2rem;
+    align-self: flex-end;
+    margin-bottom: 0.45em;
+    border-bottom: 2px dotted var(--sl-color-gray-4);
+  }
+  /* Figures sit on the title's LAST line, where the leader ends — as on a printed contents page. */
+  .end {
+    display: inline-flex;
+    flex: none;
+    align-self: flex-end;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.1em;
+  }
+  .figures {
+    color: var(--sl-color-gray-2);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .empty .figures {
+    color: var(--sl-color-gray-3);
+  }
+  .description {
+    margin: 0.25rem 0 0 3rem;
+    max-width: 58ch;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+    line-height: 1.5;
+  }
+  .empty .title {
+    color: var(--sl-color-gray-2);
+  }
+
+  /* On a phone the figures drop under the title; the leader has no line to fill, so it goes. */
+  @media (max-width: 30rem) {
+    a {
+      flex-wrap: wrap;
+      gap: 0.3rem 0.6rem;
+    }
+    .leader {
+      display: none;
+    }
+    .end {
+      flex-basis: 100%;
+      padding-inline-start: 3rem;
+    }
+    .description {
+      margin-top: 0.4rem;
+    }
+  }
+</style>

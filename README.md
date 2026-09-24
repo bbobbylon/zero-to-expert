@@ -4,7 +4,7 @@ Field guides from first steps to mastery across tech, trades, and survival. Each
 
 Every page carries a fact-check status, and the build refuses to publish a page marked "verified" without a verification date and sources.
 
-**Status:** Phase 1. All 14 guides have overview pages. The AWS pilot has a complete draft of Level 0: a hub page, five concept pages, six walkthroughs, and a CLI cheat sheet. Nothing is verified yet.
+**Status:** Phase 1. All 15 guides have overview pages. The AWS pilot has a complete draft of Level 0: a hub page, five concept pages, six walkthroughs, and a CLI cheat sheet. Git & GitHub has a draft cheat sheet. Nothing is verified yet; the home page's inspection log shows the live counts.
 
 ## Quick start (local)
 
@@ -99,8 +99,15 @@ src/domains.mjs               the list of guides (drives the sidebar and the sch
 src/content.config.ts         frontmatter schema + fact-check rules
 src/routeData.ts              "not fact-checked" banner from each page's status
 src/plugins/base-links.mjs    base-path rewriting for Markdown links
-src/styles/theme.css          colour tokens
+src/site.mjs                  site identity: GitHub repo and contact URLs, owner's first name
+src/styles/theme.css          design tokens and global styles ("The Manual" theme)
+src/components/               UI chrome: header nav, cover, page header block with stamp, footer
+src/components/home/          the home page's sections (owner's note, contents, level ruler, jobs, inspection log)
+src/lib/                      build-time helpers: contents/chapter stats, level names, base-aware links
+src/pages/index.astro         the home page (the manual's contents page), computed from the content
 src/content/docs/             all pages; one folder per guide
+public/                       favicon and og.png, the image link previews show (source: docs/og-image.html)
+docs/                         SRS (requirements), ARCHITECTURE, UI-DESIGN (design system), DEPLOYMENT (ship, verify, roll back)
 templates/                    level, walkthrough, and cheat sheet templates
 CLAUDE.md                     rules for AI agents working in this repo
 run.sh / run.ps1 / run.cmd    the one entry point: setup, dev, build, start, check, pages, clean
@@ -111,7 +118,7 @@ run.sh / run.ps1 / run.cmd    the one entry point: setup, dev, build, start, che
 1. Copy a template from `templates/` into `src/content/docs/<guide>/`.
 2. Fill in the frontmatter. New pages start as `status: draft` and show a warning banner.
 3. Link to other pages with root links: `[Level 0](/aws/levels/0-orientation/)`.
-4. Run `npm run build`. Fix anything it reports.
+4. Run `./run.sh check` (Windows: `run check`). Fix anything it reports.
 5. After checking every claim against the listed sources, set `status: verified` and `lastVerified: YYYY-MM-DD`.
 
 To add a new guide, add it to `src/domains.mjs` and create `src/content/docs/<slug>/index.md`.

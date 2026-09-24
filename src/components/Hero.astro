@@ -1,0 +1,221 @@
+---
+/**
+ * The manual's cover: the home page hero, and the 404 page.
+ *
+ * Registered as the `Hero` override in `astro.config.mjs`. Starlight renders it for any
+ * page whose frontmatter has a `hero` block — today that is the contents page
+ * (`src/pages/index.astro`) and Starlight's built-in 404. Title, tagline, and buttons come
+ * from that frontmatter, so this file is presentation only.
+ *
+ * It is set like the cover of a printed manual: a running head with the edition line and
+ * the counts, the title in heavy condensed type, the mark from the spine (the same
+ * registration mark as the favicon), a tagline in the owner's voice, and two square
+ * buttons. Left-aligned, ink on paper, one block of yellow. No image requests: the mark is
+ * inline SVG, and every number in the running head is computed from the content.
+ *
+ * The 404 page gets the same cover with its own running head ("Error 404"), the title
+ * "Page not found" in place of Starlight's bare "404", and one way back to the contents.
+ */
+import { getSiteStats } from '../lib/guide-stats';
+import { LEVELS } from '../lib/levels';
+import { href } from '../lib/links';
+
+const { entry } = Astro.locals.starlightRoute;
+const { data } = entry;
+const is404 = entry.id === '404' || entry.id.endsWith('/404');
+
+/** The only fields of a Starlight hero action this component draws. */
+interface HeroAction {
+  text: string;
+  link: string;
+  variant: string;
+}
+
+const title = is404 ? 'Page not found' : (data.hero?.title ?? data.title);
+const tagline = data.hero?.tagline;
+/** The 404 page ships with no buttons; give readers one way back. */
+const actions: HeroAction[] = is404
+  ? [{ text: 'Back to the contents', link: href('/'), variant: 'primary' }]
+  : (data.hero?.actions ?? []).map(({ text, link, variant }) => ({ text, link, variant }));
+
+const stats = await getSiteStats();
+const year = new Date().getFullYear();
+
+/** Starlight's id for the page's <h1>; its "skip to content" link and TOC both target it. */
+const PAGE_TITLE_ID = '_top';
+---
+
+<section class="cover" aria-labelledby={PAGE_TITLE_ID}>
+  <p class="running-head">
+    {
+      is404 ? (
+        <span class="lead">Error 404</span>
+      ) : (
+        <Fragment>
+          <span class="lead">Field guides</span>
+          <span>Edition 1 · {year}</span>
+          <span>
+            {stats.guides.length} chapters · {LEVELS.length} levels each
+          </span>
+        </Fragment>
+      )
+    }
+  </p>
+
+  <div class="body">
+    <div class="text">
+      <h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />
+      {tagline && <p class="tagline" set:html={tagline} />}
+
+      {
+        actions.length > 0 && (
+          <div class="actions">
+            {actions.map(({ link, text, variant }) => (
+              <a href={link} class:list={['btn', variant === 'primary' ? 'primary' : 'secondary']}>
+                {text}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </div>
+
+    {/* The spine mark: a yellow block carrying the site's registration mark. */}
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <rect width="64" height="64" fill="#f2c200" />
+      <g fill="none" stroke="#161512" stroke-width="3">
+        <circle cx="32" cy="32" r="14" />
+        <path d="M32 8v48M8 32h48" />
+      </g>
+    </svg>
+  </div>
+
+  {
+    !is404 && (
+      <p class="foot">
+        <span>Tech · Trades · Survival</span>
+        <span>Every page stamped planned, draft, in review, or checked</span>
+      </p>
+    )
+  }
+</section>
+
+<style>
+  .cover {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    margin-top: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--zx-ink);
+  }
+
+  .running-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 2rem;
+    margin: 0;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--zx-hairline);
+    border-bottom: 1px solid var(--zx-hairline);
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+  .running-head .lead {
+    color: var(--zx-label);
+    font-weight: 600;
+  }
+
+  .body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 0.6rem + 1.5vw, 1.6rem);
+    min-width: 0;
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 12ch;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: clamp(3.4rem, 1.5rem + 9vw, 8rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 0.92;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  .tagline {
+    margin: 0;
+    max-width: 50ch;
+    color: var(--sl-color-gray-1);
+    font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.3rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.4rem;
+    border: 2px solid var(--zx-ink);
+    border-radius: var(--zx-radius);
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+  .btn.primary {
+    border-color: var(--zx-yellow);
+    background: var(--zx-yellow);
+    color: var(--zx-on-yellow);
+  }
+  .btn.primary:hover {
+    border-color: var(--zx-ink);
+  }
+  .btn.secondary:hover {
+    background: var(--zx-marker);
+  }
+
+  .mark {
+    flex: none;
+    width: clamp(3.5rem, 2rem + 6vw, 7rem);
+    height: auto;
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 2rem;
+    margin: 0;
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    letter-spacing: 0.06em;
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .foot span:first-child {
+    color: var(--sl-color-gray-2);
+  }
+</style>

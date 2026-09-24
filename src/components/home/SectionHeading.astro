@@ -1,0 +1,74 @@
+---
+/**
+ * A section heading on the contents page, set the way a manual opens a section: a heavy
+ * ink rule across the column, the section number in the margin, the title in condensed
+ * type, and an optional short note on the right ("15 chapters in two parts").
+ *
+ * The note is one line of fact in monospace, not a marketing sentence: on a contents page,
+ * the reader wants counts and scope, and the guides themselves do the explaining.
+ *
+ * The <h2> carries the anchor id so the header nav and footer can link straight to a
+ * section ("/#fact-check").
+ */
+interface Props {
+  /** Anchor id, so other pages can link here (e.g. "/#fact-check"). */
+  id: string;
+  /** Section number as printed in the margin: "1", "2", ... */
+  number: string;
+  title: string;
+  /** One short factual line, set on the right of the rule. */
+  note?: string;
+}
+
+const { id, number, title, note } = Astro.props;
+---
+
+<header class="section-heading">
+  <h2 id={id}>
+    <span class="number" aria-hidden="true">{number}</span>
+    <span class="sr-only">Section {number}: </span>
+    {title}
+  </h2>
+  {note && <p class="note">{note}</p>}
+</header>
+
+<style>
+  .section-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem 2rem;
+    margin-bottom: 1.5rem;
+    padding-top: 0.6rem;
+    border-top: 2px solid var(--zx-ink);
+  }
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0;
+    /* Starlight pads anchor jumps just enough for the heading; keep the rule above it in view too. */
+    scroll-margin-top: 2.75rem;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+  }
+  .number {
+    color: var(--zx-label);
+    font-family: var(--zx-font-mono);
+    font-size: 0.5em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .note {
+    margin: 0;
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+  }
+</style>

@@ -19,6 +19,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLinksValidator from 'starlight-links-validator';
 import { DOMAINS, GROUPS } from './src/domains.mjs';
+import { REPO_URL } from './src/site.mjs';
 import { satteri } from '@astrojs/markdown-satteri';
 import { baseLinksPlugin } from './src/plugins/base-links.mjs';
 
@@ -30,6 +31,14 @@ const site = process.env.SITE_URL || undefined;
  * an empty string for root sites, and an empty string must fall back to "/".
  */
 const base = process.env.BASE_PATH || '/';
+
+/**
+ * Link-preview image: what Slack, Discord, iMessage, and social sites show when someone
+ * shares a page. The file is `public/og.png` (source and regeneration steps:
+ * `docs/og-image.html`). Scrapers require an absolute URL, which only exists once SITE_URL
+ * is set, so local builds leave the tags out; the CI build for GitHub Pages includes them.
+ */
+const ogImage = site ? new URL(`${base.replace(/\/+$/, '')}/og.png`, site).href : undefined;
 
 /** Folder that holds every page, relative to the project root. */
 const DOCS_DIR = './src/content/docs';
@@ -88,7 +97,48 @@ export default defineConfig({
     starlight({
       title: 'Zero to Expert',
       description: 'Field guides from first steps to mastery: tech, trades, and survival.',
-      customCss: ['./src/styles/theme.css'],
+      logo: { src: './src/assets/logo.svg', alt: '' },
+      social: [{ icon: 'github', label: 'GitHub', href: REPO_URL }],
+      // Starlight already emits og:title, og:description, and twitter:card; it has no image.
+      head: ogImage
+        ? [
+            { tag: 'meta', attrs: { property: 'og:image', content: ogImage } },
+            { tag: 'meta', attrs: { property: 'og:image:width', content: '1200' } },
+            { tag: 'meta', attrs: { property: 'og:image:height', content: '630' } },
+            { tag: 'meta', attrs: { property: 'og:image:alt', content: 'Zero to Expert: field guides from first steps to mastery.' } },
+          ]
+        : [],
+      // Fonts are self-hosted npm packages (Fontsource), not a CDN: builds work offline and
+      // readers' browsers never contact a font provider (see about/privacy.md).
+      //   Barlow Condensed = titles and labels (the sturdy condensed face of signage and manuals)
+      //   IBM Plex Mono    = numbers, part-number-style labels, and inspection stamps
+      // Only the Latin subsets and the weights the theme uses are loaded.
+      customCss: [
+        '@fontsource/barlow-condensed/latin-600.css',
+        '@fontsource/barlow-condensed/latin-700.css',
+        '@fontsource/ibm-plex-mono/latin-400.css',
+        '@fontsource/ibm-plex-mono/latin-600.css',
+        './src/styles/theme.css',
+      ],
+      // UI chrome. Each file documents what it changes and how to re-sync it with Starlight
+      // after an upgrade. Design rationale: docs/UI-DESIGN.md.
+      components: {
+        Header: './src/components/Header.astro', // adds the primary nav bar
+        Hero: './src/components/Hero.astro', // the manual's cover (home) and the 404 page
+        PageTitle: './src/components/PageTitle.astro', // chapter line, spec strip, thumb-index tab
+        Footer: './src/components/Footer.astro', // index + colophon under every page
+        MarkdownContent: './src/components/MarkdownContent.astro', // keyboard access for wide tables
+      },
+      // Code blocks are square-cornered and hairline-ruled like everything else printed in the
+      // manual. The hairline is a token from theme.css, so both themes follow automatically.
+      // (Backgrounds are left to Starlight, which sets them per theme from the --sl-color-gray-*
+      // tokens we already own.)
+      expressiveCode: {
+        styleOverrides: {
+          borderRadius: '2px',
+          borderColor: 'var(--zx-hairline)',
+        },
+      },
       // Adds the "not fact-checked yet" banner from each page's `status`.
       routeMiddleware: './src/routeData.ts',
       sidebar,

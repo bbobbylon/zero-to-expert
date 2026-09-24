@@ -1,0 +1,166 @@
+---
+/**
+ * The inspection log: fact-check status across every guide page, as a ruled tally.
+ *
+ * This is the owner's verification backlog made visible. A page only moves from Draft to
+ * Verified when he checks it against its listed sources (CLAUDE.md, "Fact-checking rules"),
+ * so the headline figure — pages checked out of pages written — is the honest measure of
+ * how far the manual can be trusted today, and it is shown even when it is zero.
+ *
+ * Each tally row uses the same tag as the page lists, so a reader who has seen "Draft" on a
+ * contents line can find what it means here.
+ */
+import StatusChip from '../StatusChip.astro';
+import { STATUSES, STATUS_LABELS, type SiteStats } from '../../lib/guide-stats';
+import { href } from '../../lib/links';
+
+interface Props {
+  stats: SiteStats;
+}
+
+const { stats } = Astro.props;
+const total = stats.totalPages || 1;
+const rows = STATUSES.map((status) => ({
+  status,
+  label: STATUS_LABELS[status],
+  count: stats.statusCounts[status],
+  percent: Math.round((stats.statusCounts[status] / total) * 100),
+}));
+---
+
+<div class="log">
+  <p class="headline">
+    <span class="figure">
+      {stats.statusCounts.verified}<span class="of"> / {stats.writtenPages}</span>
+    </span>
+    <span class="caption">written pages checked against their sources</span>
+  </p>
+
+  <table>
+    <caption class="sr-only">Pages by fact-check status</caption>
+    <thead>
+      <tr>
+        <th scope="col">Status</th>
+        <th scope="col" class="num">Pages</th>
+        <th scope="col" class="num">Share</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <th scope="row">
+              <StatusChip status={row.status} />
+              <span class="sr-only">{row.label}</span>
+            </th>
+            <td class="num">{row.count}</td>
+            <td class="num">{row.percent}%</td>
+          </tr>
+        ))
+      }
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">All guide pages</th>
+        <td class="num">{stats.totalPages}</td>
+        <td class="num">100%</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <p class="note">
+    A page starts as a draft and is stamped only after I have checked it.{' '}
+    <a href={href('/about/how-guides-work/#page-status')}>What each status means</a>
+  </p>
+</div>
+
+<style>
+  .log {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .headline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 0;
+  }
+  .figure {
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-size: 2.6rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .of {
+    color: var(--sl-color-gray-3);
+    font-size: 0.55em;
+    font-weight: 400;
+  }
+  .caption {
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: var(--sl-text-sm);
+  }
+  th,
+  td {
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--zx-hairline);
+    text-align: start;
+    vertical-align: middle;
+  }
+  thead th {
+    border-top: 2px solid var(--zx-ink);
+    border-bottom: 2px solid var(--zx-ink);
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  tbody th {
+    font-weight: 400;
+  }
+  tfoot th,
+  tfoot td {
+    border-top: 2px solid var(--zx-ink);
+    border-bottom: 0;
+    color: var(--sl-color-white);
+    font-weight: 600;
+  }
+  .num {
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+  td.num {
+    padding-inline-start: 1.5rem;
+  }
+
+  .note {
+    margin: 0;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+    line-height: 1.65;
+  }
+  .note a {
+    color: var(--sl-color-white);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    white-space: nowrap;
+  }
+  .note a:hover {
+    background: var(--zx-marker);
+  }
+</style>

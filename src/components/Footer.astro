@@ -1,0 +1,274 @@
+---
+/**
+ * Page footer: Starlight's per-page footer, then the manual's index and colophon.
+ *
+ * Registered as the `Footer` override in `astro.config.mjs`. The top block (edit link,
+ * last-updated date, previous/next) is Starlight 0.42.2's default footer unchanged. The
+ * site footer below it is new and follows the owner's standard footer shape:
+ *   1. a short word from the owner + link columns (chapters come from `src/domains.mjs`,
+ *      numbered, so they never go stale),
+ *   2. a copyright line with a one-line privacy blurb, beside Terms of Use and Privacy Policy,
+ *   3. "Contact Us", set apart underneath.
+ *
+ * The privacy blurb is a factual claim. It is true because the site is static, sets no
+ * cookies, loads no third-party scripts, and self-hosts its fonts. If analytics, embeds,
+ * or a CDN font are ever added, change the blurb and `about/privacy.md` in the same commit.
+ *
+ * `data-pagefind-ignore` keeps this repeated text out of every page's search results.
+ */
+import EditLink from 'virtual:starlight/components/EditLink';
+import LastUpdated from 'virtual:starlight/components/LastUpdated';
+import Pagination from 'virtual:starlight/components/Pagination';
+
+import { DOMAINS, GROUPS } from '../domains.mjs';
+import { chapterLabel, chapterNumber } from '../lib/guide-stats';
+import { href } from '../lib/links';
+import { CONTACT_URL, OWNER_NAME, REPO_URL } from '../site.mjs';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="sl-flex">
+  <div class="meta sl-flex">
+    <EditLink />
+    <LastUpdated />
+  </div>
+  <Pagination />
+
+  <div class="colophon" data-pagefind-ignore>
+    <div class="columns">
+      <div class="brand">
+        <a class="wordmark" href={href('/')}>
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <rect width="64" height="64" fill="#f2c200" />
+            <g fill="none" stroke="#161512" stroke-width="4">
+              <circle cx="32" cy="32" r="14" />
+              <path d="M32 8v48M8 32h48" />
+            </g>
+          </svg>
+          Zero to Expert
+        </a>
+        <p>
+          Field guides from first steps to mastery in tech, trades, and survival. I write them so I have one
+          trustworthy place to send people. Every page says whether I have checked it yet.
+        </p>
+        <p class="signed">— {OWNER_NAME}</p>
+      </div>
+
+      {
+        GROUPS.map((group, index) => (
+          <nav aria-label={`Part ${index + 1}: ${group}`}>
+            <h2>
+              <span class="part">Part {index + 1}</span> {group}
+            </h2>
+            <ol>
+              {DOMAINS.filter((domain) => domain.group === group).map((domain) => (
+                <li>
+                  <a href={href(`/${domain.slug}/`)}>
+                    <span class="number" aria-hidden="true">
+                      {chapterLabel(chapterNumber(domain.slug))}
+                    </span>
+                    {domain.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        ))
+      }
+
+      <nav aria-label="About this site">
+        <h2>About</h2>
+        <ul>
+          <li><a href={href('/')}>Contents</a></li>
+          <li><a href={href('/about/how-guides-work/')}>How these guides work</a></li>
+          <li><a href={href('/#fact-check')}>Inspection log</a></li>
+          <li><a href={REPO_URL}>Source on GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="legal">
+      <p>© {year} Zero to Expert. No accounts, no ads, no tracking cookies.</p>
+      <ul>
+        <li><a href={href('/about/terms/')}>Terms of Use</a></li>
+        <li><a href={href('/about/privacy/')}>Privacy Policy</a></li>
+      </ul>
+    </div>
+
+    <div class="contact">
+      <a href={CONTACT_URL}>Contact Us</a>
+      <span>Spotted an error or a missing source? Open an issue. Corrections are the point of the stamps.</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  @layer starlight.core {
+    footer {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .meta {
+      gap: 0.75rem 3rem;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+      font-size: var(--sl-text-sm);
+      color: var(--sl-color-gray-3);
+    }
+    .meta > :global(p:only-child) {
+      margin-inline-start: auto;
+    }
+  }
+
+  /* ----- Index and colophon (new) ----- */
+  .colophon {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--zx-ink);
+    font-size: var(--sl-text-sm);
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 2rem 2rem;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    /* Full row on a phone (so the wordmark never wraps); a wide column once there is room. */
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 64rem) {
+    .brand {
+      grid-column: span 1;
+      max-width: 22rem;
+    }
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .wordmark svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+  .brand p {
+    margin: 0;
+    color: var(--sl-color-gray-3);
+    line-height: 1.6;
+  }
+  .brand .signed {
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  h2 {
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--zx-hairline);
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .part {
+    color: var(--zx-label);
+  }
+  ul,
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .colophon a {
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+  }
+  .colophon a:hover {
+    color: var(--sl-color-white);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .number {
+    display: inline-block;
+    width: 1.9rem;
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--zx-hairline);
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+  }
+  .legal p {
+    margin: 0;
+  }
+  .legal ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  /* "Contact Us" sits on its own line under the legal row, per the house footer shape. */
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    padding: 1rem 0 0.5rem;
+    border-top: 1px solid var(--zx-hairline);
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+  }
+  .contact a,
+  .contact a:hover {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--zx-ink);
+    border-radius: var(--zx-radius);
+    color: var(--sl-color-white);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .contact a:hover {
+    background: var(--zx-marker);
+  }
+</style>

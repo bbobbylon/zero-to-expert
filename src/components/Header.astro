@@ -1,0 +1,188 @@
+---
+/**
+ * Site header: Starlight's default header plus a primary nav, set as a running head.
+ *
+ * Registered as the `Header` override in `astro.config.mjs`. The layout grid below is
+ * copied from Starlight 0.42.2's `Header.astro`, because that grid is what lines the search
+ * box up with the content column; only the `<nav>` and its styles are new. When upgrading
+ * Starlight, diff this against `node_modules/@astrojs/starlight/dist/components/Header.astro`.
+ *
+ * The nav is a desktop convenience, not the only way around: on narrow screens it hides
+ * and the sidebar menu (which lists every chapter) takes over, so no page depends on it.
+ * Its labels are monospace, like the running head of a printed page, and the current
+ * section is marked with a yellow bar underneath — the same yellow the sidebar uses for
+ * the current page.
+ *
+ * Analogy: the Angular app shell's toolbar component — shared chrome that wraps every
+ * routed page and knows which route is active.
+ */
+import config from 'virtual:starlight/user-config';
+
+import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
+import Search from 'virtual:starlight/components/Search';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import SocialIcons from 'virtual:starlight/components/SocialIcons';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+
+import { href } from '../lib/links';
+
+/** Same rule as Starlight's default header. */
+const shouldRenderSearch = config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+
+/** `match` is the path prefix that marks a link as current. Hash links are never "current". */
+const NAV_ITEMS = [
+  { label: 'Contents', path: '/', match: '/' },
+  { label: 'Tech', path: '/#tech' },
+  { label: 'Hands-on', path: '/#hands-on' },
+  { label: 'How it works', path: '/about/how-guides-work/', match: '/about/how-guides-work/' },
+];
+
+const currentPath = Astro.url.pathname.replace(/\/?$/, '/');
+const isCurrent = (match?: string) => match !== undefined && currentPath === href(match).replace(/\/?$/, '/');
+---
+
+<div class="header">
+  <div class="title-wrapper sl-flex">
+    <SiteTitle />
+  </div>
+  <div class="sl-flex print:hidden">
+    {shouldRenderSearch && <Search />}
+  </div>
+  <div class="sl-hidden md:sl-flex print:hidden right-group">
+    <nav class="primary-nav" aria-label="Primary">
+      <ul>
+        {
+          NAV_ITEMS.map((item) => (
+            <li>
+              <a href={href(item.path)} aria-current={isCurrent(item.match) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="sl-flex social-icons">
+      <SocialIcons />
+    </div>
+    <ThemeSelect />
+    <LanguageSelect />
+  </div>
+</div>
+
+<style>
+  @layer starlight.core {
+    .header {
+      display: flex;
+      gap: var(--sl-nav-gap);
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+    }
+
+    .title-wrapper {
+      /* Prevent long titles overflowing and covering the search and menu buttons on narrow viewports. */
+      overflow: clip;
+      /* Avoid clipping focus ring around link inside title wrapper. */
+      padding: 0.25rem;
+      margin: -0.25rem;
+      min-width: 0;
+    }
+
+    .right-group,
+    .social-icons {
+      gap: 1rem;
+      align-items: center;
+    }
+    .social-icons::after {
+      content: '';
+      height: 2rem;
+      border-inline-end: 1px solid var(--sl-color-gray-5);
+    }
+
+    @media (min-width: 50rem) {
+      :global(:root[data-has-sidebar]) {
+        --__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+      }
+      :global(:root:not([data-has-toc])) {
+        --__toc-width: 0rem;
+      }
+      .header {
+        --__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
+        --__main-column-fr: calc(
+          (
+              100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
+                (2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
+                var(--sl-content-width)
+            ) / 2
+        );
+        display: grid;
+        grid-template-columns:
+          /* 1 (site title): runs up until the main content column’s left edge or the width of the title, whichever is the largest  */
+          minmax(calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))), auto)
+          /* 2 (search box): all free space that is available. */
+          1fr
+          /* 3 (right items): use the space that these need. */
+          auto;
+        align-content: center;
+      }
+    }
+  }
+
+  /* ----- Primary nav (new) ----- */
+  .primary-nav {
+    display: none;
+  }
+  .primary-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .primary-nav a {
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.65rem;
+    color: var(--sl-color-gray-2);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  /* A yellow bar under the link: hover draws it, the current section keeps it. */
+  .primary-nav a::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0.65rem;
+    bottom: 0.1rem;
+    height: 3px;
+    background: var(--zx-yellow);
+    opacity: 0;
+  }
+  .primary-nav a:hover,
+  .primary-nav a[aria-current='page'] {
+    color: var(--sl-color-white);
+  }
+  .primary-nav a:hover::after,
+  .primary-nav a[aria-current='page']::after {
+    opacity: 1;
+  }
+
+  /* Room for the nav appears earlier on pages without a sidebar (the contents page). */
+  @media (min-width: 60rem) {
+    :global(:root:not([data-has-sidebar])) .primary-nav {
+      display: block;
+    }
+  }
+  @media (min-width: 82rem) {
+    .primary-nav {
+      display: block;
+    }
+  }
+</style>
