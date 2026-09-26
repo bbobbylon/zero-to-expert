@@ -12,11 +12,16 @@
  * rule `scrollable-region-focusable`, found by the 2026-09-20 audit). Markdown has no way
  * to put `tabindex` on a table, so the script below adds it, only while a table actually
  * overflows. The content files stay plain Markdown, so the Phase 2 app is unaffected.
+ *
+ * After the body comes the page's source list (`Sources.astro`), built from frontmatter so
+ * no page ever has to write it by hand and no page can leave it out.
  */
 import '@astrojs/starlight/style/markdown.css';
+import Sources from './Sources.astro';
 ---
 
 <div class="sl-markdown-content"><slot /></div>
+<Sources />
 
 <script>
   /** Make sideways-scrolling tables focusable so arrow keys can scroll them. */

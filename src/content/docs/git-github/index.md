@@ -23,6 +23,6 @@ Git and GitHub, from the commands you already know to the fixes for the errors t
 | 4 | Expert | Do professional-grade work. |
 | 5 | Mastery | Handle rare and complex work, and explain why things work the way they do. |
 
-There's no leveled walkthrough series here yet — start with the [cheat sheet](/git-github/cheat-sheet/) instead. Unlike the other domains' cheat sheets, this one didn't start from documentation review: its first entries came from a real push that failed and got fixed, on the spot, with the actual error message in hand. It'll keep growing the same way — one verified fix at a time — rather than being written all at once.
+Start with [Level 0](/git-github/levels/0-orientation/) for the vocabulary — repository, commit, staging area, branch, remote — and the two decisions you'll keep meeting (HTTPS or SSH, merge or rebase). Then keep the [cheat sheet](/git-github/cheat-sheet/) open while you work. Unlike the other domains' cheat sheets, this one didn't start from documentation review: its first entries came from a real push that failed and got fixed, on the spot, with the actual error message in hand. The everyday Git commands were added afterwards from Git's own documentation and run in a throwaway repo, and the sheet says which rows are which. There's no leveled walkthrough series yet; the guide will keep growing one verified fix at a time rather than being written all at once.
 
 See [how these guides work](/about/how-guides-work/) for what the levels, tiers, and page statuses mean.

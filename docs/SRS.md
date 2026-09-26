@@ -2,8 +2,10 @@
 
 | | |
 | --- | --- |
-| **Version** | 1.2 |
+| **Version** | 1.4 |
 | **Written** | 2026-09-20 |
+| **Changed in 1.4** | 2026-09-23: `sources`, `tools`, and `parts` are rendered, not just validated (FR-15, FR-21); the "tools before step 1" story is now met; a verified page with a `TODO(source)` or `TODO(test)` marker fails the build (FR-4, FR-10) |
+| **Changed in 1.3** | 2026-09-23: print added as a non-functional requirement; accessibility status updated (reflow and forced colors checked); "How these guides work" rewritten in the owner's voice |
 | **Changed in 1.2** | 2026-09-23: home page is the manual's contents page (FR-13), site speaks in the owner's first person (FR-15), accessibility re-audited for the new design |
 | **Changed in 1.1** | Accessibility status in section 4: audited by tools, results linked |
 | **Describes** | Phase 1 (the static site), package version 0.0.1 |
@@ -55,7 +57,7 @@ Each requirement below is implemented today unless marked otherwise.
 | FR-1 | The list of guides has one source (`src/domains.mjs`). Adding an entry adds the guide to the sidebar, the contents page, the footer, and the set of valid `domain` values; its position in the list is its chapter number. |
 | FR-2 | Every page declares `domain`, `pageType` (`overview`, `level`, `walkthrough`, `cheatsheet`, `explanation`, `reference`), and `status`. `level` pages must set `level` 0-5; `walkthrough` pages must set `difficulty` (`easy`, `moderate`, `hard`, `expert`). |
 | FR-3 | A page may list `sources` (title, absolute URL, optional publisher), `tags`, `time`, `tools`, `parts`, and `safetyCritical`. |
-| FR-4 | A `verified` page must have `lastVerified` and at least one source. A `safetyCritical` page must have at least one source before it can be `review` or `verified`. |
+| FR-4 | A `verified` page must have `lastVerified` and at least one source, and its body may not contain a marked gap (`TODO(source)`, `TODO(test)`). A `safetyCritical` page must have at least one source before it can be `review` or `verified`. |
 | FR-5 | Cheat sheets have three tiers: Common, Uncommon, Rare. Every Rare entry links to official documentation. |
 
 ### Trust and safety
@@ -71,7 +73,7 @@ Each requirement below is implemented today unless marked otherwise.
 
 | ID | Requirement |
 | --- | --- |
-| FR-10 | The build fails on any frontmatter that breaks FR-2 to FR-4, naming the file, field, and rule. |
+| FR-10 | The build fails on any frontmatter that breaks FR-2 to FR-4, naming the file, field, and rule. The gap-marker half of FR-4 is checked against the page body at render time (`src/routeData.ts`) and fails the build the same way, naming the file and the markers found. |
 | FR-11 | The build fails on any broken internal link or missing heading anchor in Markdown content. |
 | FR-12 | A failed build publishes nothing; the live site keeps its last good version. |
 
@@ -81,16 +83,17 @@ Each requirement below is implemented today unless marked otherwise.
 | --- | --- |
 | FR-13 | The home page is the manual's contents page, computed at build time: a signed note from the owner with the honest counts, one numbered contents line per guide (pages written, pages checked, status), the six levels as a ruler, every walkthrough with difficulty, time, and status, and an inspection log of pages by status. |
 | FR-14 | Each guide overview shows the chapter's contents: which of the six levels exist (linked, with status), walkthrough and concept counts, and the cheat sheet once written. |
-| FR-15 | Every guide page shows its chapter number, chapter name, and page type above the title, and its level (as a gauge), difficulty, time, safety flag, and inspection stamp below it. Site copy speaks in the owner's first person and is signed with his first name (`OWNER_NAME` in `src/site.mjs`); it makes no claims about him beyond the site's purpose. |
+| FR-15 | Every guide page shows its chapter number, chapter name, and page type above the title, and its level (as a gauge, linked to the chapter's page for that level once written), difficulty, time, safety flag, inspection stamp, and (when listed) its tools and parts below it, so a reader can gather everything before step 1. Site copy speaks in the owner's first person and is signed with his first name (`OWNER_NAME` in `src/site.mjs`); it makes no claims about him beyond the site's purpose. |
 | FR-16 | Every page has a primary navigation bar, a sidebar of all guides, full-text search, a light/dark theme switch, and a footer with links to every guide (numbered), Terms of Use, Privacy Policy, and Contact Us. |
 | FR-17 | Commands that differ by operating system are shown in synced Windows/macOS tabs. |
+| FR-21 | Every guide page that can carry specifics (all but overviews and planned pages) ends with its `sources` rendered from frontmatter as a numbered list with publisher, under a one-line summary that ties the list to the page's status (not yet checked against these / being checked / checked on a date). A page with none says so in words. Authors never write this section by hand, so the sources a reader sees are exactly the ones the build validated (FR-4). |
 
 ### Operations
 
 | ID | Requirement |
 | --- | --- |
 | FR-18 | One entry script (`run.sh`, `run.ps1`, `run.cmd`) offers the same commands on every OS: `setup`, `dev`, `build`, `start`, `check`, `pages`, `clean`. |
-| FR-19 | A push to the deploy branch builds, validates, and publishes the site to GitHub Pages with no manual step. See the known issue in [DEPLOYMENT](./DEPLOYMENT.md#known-issue-branch-name). |
+| FR-19 | A push to the deploy branch (`main`) builds, validates, and publishes the site to GitHub Pages with no manual step. See [DEPLOYMENT](./DEPLOYMENT.md#deploy-branch). |
 | FR-20 | No repository name or site URL is hard-coded; the base path and origin come from the environment, so renaming the repo or adding a custom domain needs no code change. |
 
 ### Phase 2 (not built)
@@ -103,7 +106,8 @@ Accounts and saved progress in a Spring Boot + Angular app that reads the same M
 | --- | --- | --- |
 | Accuracy | Specifics (commands, torque values, part numbers, dosages, prices) come only from a listed source, preferring primary sources. Unknowns are left as marked gaps (`TODO(source)`, `TODO(test)`), never guessed. | Enforced by process (`CLAUDE.md`) and partly by the build (FR-4) |
 | Portability | Content is plain Markdown plus a small allowed component set (`Tabs`, `TabItem`, `Steps`, `Badge`) and Markdown asides, so the Phase 2 app can render it. Site chrome never leaks into content files. | Met |
-| Accessibility | Target WCAG 2.1 AA: contrast, keyboard access, screen-reader structure, reduced motion, forced colors. | **Checked by tools on 2026-09-20, not certified.** axe-core: 0 violations after 1 fix. Measured text contrast: 0 failures after 4 fixes. Still missing: a screen-reader pass by a person, zoom and forced-colors tests. Details: [UI-DESIGN §5](./UI-DESIGN.md#5-accessibility-a11y) |
+| Accessibility | Target WCAG 2.1 AA: contrast, keyboard access, screen-reader structure, reduced motion, reflow at 320 px, forced colors. | **Checked by tools on 2026-09-23, not certified.** axe-core: 0 violations. Measured text contrast: 0 failures. Reflow at 320 px: 0 overflows after 2 fixes. Forced colors: emulated, fallbacks added. Still missing: a screen-reader pass by a person (the owner will do it). Details: [UI-DESIGN §5](./UI-DESIGN.md#5-accessibility-a11y) |
+| Print | A page printed from either theme is legible on paper: paper palette, ink outlines instead of yellow fills, source URLs printed after their links, no navigation chrome, and a "printed from" line so a paper copy can be traced back and re-checked. | Met as rendered CSS (checked 2026-09-23 in print emulation, both themes); not yet checked as a paginated PDF. See [UI-DESIGN §1, Print](./UI-DESIGN.md#print) |
 | Privacy | No accounts, ads, analytics, or tracking cookies. Fonts are self-hosted, so browsers contact no third party. Browser storage holds only the theme choice and sidebar state. | Met; stated in the Privacy Policy (draft) |
 | Security | Static files only: no server code, database, or secrets. Served over HTTPS by GitHub Pages. CI runs with least-privilege permissions. | Met; see [ARCHITECTURE §8](./ARCHITECTURE.md#8-security-considerations) |
 | Reliability | Deploys are atomic: build and validation must pass before anything is published (FR-12). Uptime is whatever GitHub Pages provides. | Met; no uptime target set |

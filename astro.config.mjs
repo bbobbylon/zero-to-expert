@@ -127,7 +127,7 @@ export default defineConfig({
         Hero: './src/components/Hero.astro', // the manual's cover (home) and the 404 page
         PageTitle: './src/components/PageTitle.astro', // chapter line, spec strip, thumb-index tab
         Footer: './src/components/Footer.astro', // index + colophon under every page
-        MarkdownContent: './src/components/MarkdownContent.astro', // keyboard access for wide tables
+        MarkdownContent: './src/components/MarkdownContent.astro', // keyboard access for wide tables; Sources section after the body
       },
       // Code blocks are square-cornered and hairline-ruled like everything else printed in the
       // manual. The hairline is a token from theme.css, so both themes follow automatically.
@@ -139,7 +139,8 @@ export default defineConfig({
           borderColor: 'var(--zx-hairline)',
         },
       },
-      // Adds the "not fact-checked yet" banner from each page's `status`.
+      // Adds the "not fact-checked yet" banner from each page's `status`, and lists the
+      // Sources section in "On this page".
       routeMiddleware: './src/routeData.ts',
       sidebar,
       plugins: [

@@ -1,0 +1,133 @@
+---
+/**
+ * The page's sources, rendered from frontmatter at the end of every guide page.
+ *
+ * Every specific claim on a guide page must trace to an entry in its `sources` frontmatter
+ * (CLAUDE.md, "Fact-checking rules"), and the build refuses a verified page without one.
+ * Until this component existed the list was validated but never shown, so a reader could
+ * not see what a page was checked against. Now it is the last thing on the page, the way a
+ * manual ends a procedure with its references: numbered, with the publisher beside each.
+ *
+ * The one-line summary beside the heading says what the sources mean for this page — checked
+ * against them on a date, being checked, or not yet checked — using the same status the
+ * stamp shows, so the two can never disagree. A written page with no sources says so in
+ * plain words instead of hiding the gap.
+ *
+ * `MarkdownContent.astro` renders this after the page body. Which pages get it, and what
+ * the summary says, is decided in `src/lib/sources.ts`, shared with `routeData.ts` so the
+ * "On this page" list and the page itself agree.
+ */
+import { sourcesSection, SOURCES_HEADING_ID } from '../lib/sources';
+
+const { show, sources, summary } = sourcesSection(Astro.locals.starlightRoute.entry.data);
+---
+
+{
+  show && (
+    <section class="sources" aria-labelledby={SOURCES_HEADING_ID}>
+      <h2 id={SOURCES_HEADING_ID}>
+        Sources <span class="summary">{summary}</span>
+      </h2>
+      {sources.length > 0 ? (
+        <ol>
+          {sources.map((source) => (
+            <li>
+              <a href={source.url}>{source.title}</a>
+              {source.publisher && <span class="publisher">{source.publisher}</span>}
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="none">
+          No sources are listed for this page yet, so treat every specific on it as unverified. The stamp above
+          the page will say so until they are added and checked.
+        </p>
+      )}
+    </section>
+  )
+}
+
+<style>
+  .sources {
+    margin-top: 3.5rem;
+    padding-top: 0.6rem;
+    border-top: 2px solid var(--zx-ink);
+  }
+  h2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin: 0 0 0.85rem;
+    color: var(--zx-label);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+  .summary {
+    color: var(--sl-color-gray-3);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding-inline-start: 2.2rem;
+    font-size: var(--sl-text-sm);
+    line-height: 1.5;
+  }
+  li::marker {
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+  }
+  a {
+    color: var(--sl-color-white);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+  a:hover {
+    background-image: linear-gradient(var(--zx-marker), var(--zx-marker));
+    background-repeat: no-repeat;
+    background-position: 0 92%;
+    background-size: 100% 0.42em;
+  }
+  .publisher {
+    display: inline-block;
+    margin-inline-start: 0.6rem;
+    color: var(--sl-color-gray-3);
+    font-family: var(--zx-font-mono);
+    font-size: var(--sl-text-xs);
+    letter-spacing: 0.02em;
+  }
+  .none {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+    line-height: 1.55;
+  }
+
+  /* On paper a source is only useful with its address. */
+  @media print {
+    a::after {
+      content: ' (' attr(href) ')';
+      font-family: var(--zx-font-mono);
+      font-size: 0.8em;
+      word-break: break-all;
+    }
+  }
+  @media (forced-colors: active) {
+    a:hover {
+      text-decoration-thickness: 2px;
+    }
+  }
+</style>

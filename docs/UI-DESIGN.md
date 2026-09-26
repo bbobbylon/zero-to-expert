@@ -2,8 +2,10 @@
 
 | | |
 | --- | --- |
-| **Version** | 2.0 |
+| **Version** | 2.2 |
 | **Written** | 2026-09-23 |
+| **Changed in 2.2** | Same day: `sources`, `tools`, and `parts` frontmatter now render (they were validated but never shown): a Sources section closes every guide page (`Sources.astro`, also listed in "On this page"), and a bench list in the header block names the tools and parts before step 1. The level in the spec strip links to the chapter's level page. |
+| **Changed in 2.1** | Same day: print as a designed surface (paper palette in every theme, trimmed chrome, printed-from line, source URLs on paper); reflow at 320 px and forced-colours fallbacks; second audit record in section 5 |
 | **Changed in 2.0** | New design system, "The Manual", replacing the cinema theme of 1.x: new palette, fonts, logo, home page (a contents page), page header block with inspection stamp, chapter contents on overviews, index-and-colophon footer, first-person copy. Accessibility audit re-run (section 5). |
 | **Changed in 1.2** | First accessibility audit; `MarkdownContent` override |
 | **Applies to** | Astro 7.3, Starlight 0.42.2 |
@@ -78,6 +80,16 @@ Sizes use Starlight's `--sl-text-*` scale. Display sizes use `clamp()` so they s
 
 No image files and no icon font. The logo (`src/assets/logo.svg`), favicon (`public/favicon.svg`), and the cover mark in `Hero.astro` / `Footer.astro` are one drawing: a yellow square with a registration mark (circle and crosshair) in ink. The hazard mark is the text character `▲` beside the words "Safety-critical". The home page makes zero image requests.
 
+### Print
+
+People take a walkthrough to the garage on paper, so the printed page is a designed surface, not an afterthought (`@media print` in `theme.css`, plus scoped rules in `Footer`, `PageTitle`, and `Hero`):
+
+- **Paper palette regardless of theme.** The light-theme tokens are repeated under `@media print`. Without that, a dark-theme reader prints pale grey text on white paper, because browsers drop backgrounds when printing and Starlight's own print palette loses to these unlayered tokens. Code blocks get the same treatment: Expressive Code stores both themes' colours on each token, and print selects the light set.
+- **No toner for chrome.** The chapter tab and the cover's primary button become ink outlines; search, theme switch, GitHub link, the "On this page" dropdown, previous/next, and the footer directory are dropped. The footer prints one line instead: *Printed from <URL>* (absolute when `SITE_URL` is set) and a reminder that the stamp is only as current as the day it was printed.
+- **Paper has no hover.** Outside links in content (the sources, above all) print their address after the link text. Collapsed `<details>` print open where the browser supports `::details-content`. Headings stay with what follows them; table rows and code blocks are never split; long commands wrap instead of being cut off.
+
+Check it with the browser's print preview (both themes) after changing tokens, the footer, or the page title.
+
 ## 2. Component Library
 
 Everything is in `src/components/`. Each file opens with a comment explaining what it changes and why.
@@ -88,9 +100,9 @@ Everything is in `src/components/`. Each file opens with a comment explaining wh
 | --- | --- | --- |
 | `Header.astro` | Starlight header | Primary nav as a running head: Contents, Tech, Hands-on, How it works, in monospace with a yellow bar under the current section. Layout grid copied from Starlight 0.42.2. |
 | `Hero.astro` | Starlight hero | The manual's cover on the home page: running head (edition line and counts), title, cover mark, tagline, two square buttons. Also styles Starlight's built-in 404 ("Error 404 / Page not found"). |
-| `PageTitle.astro` | Starlight page title | Chapter line above the title (yellow chapter tab, chapter name / page type); header block below it with the spec strip (level gauge, difficulty, time, safety) and the inspection stamp. On guide overview pages it also renders `GuideHub.astro`. |
+| `PageTitle.astro` | Starlight page title | Chapter line above the title (yellow chapter tab, chapter name / page type); header block below it with the spec strip (level gauge — linked to the chapter's level page once that exists, except on the level page itself — difficulty, time, safety), the inspection stamp, and the **bench list**: `tools` and `parts` from frontmatter as two labelled columns under a dotted rule, so a reader gathers everything before step 1. Rendered only when the page lists something. On guide overview pages it also renders `GuideHub.astro`. |
 | `Footer.astro` | Starlight footer | Keeps edit link / last updated / pagination; adds the index and colophon (section 3). |
-| `MarkdownContent.astro` | Starlight Markdown wrapper | Same markup, plus a small script that makes a table keyboard-focusable while it scrolls sideways (section 5). Content files stay plain Markdown. |
+| `MarkdownContent.astro` | Starlight Markdown wrapper | Same markup, plus a small script that makes a table keyboard-focusable while it scrolls sideways (section 5), and `Sources.astro` after the body. Content files stay plain Markdown. |
 
 **After a Starlight upgrade**, diff `Header.astro`, `Footer.astro`, and `MarkdownContent.astro` against their originals in `node_modules/@astrojs/starlight/dist/components/`. `src/starlight-virtual.d.ts` supplies editor types for the `virtual:starlight/*` imports those files use.
 
@@ -101,6 +113,7 @@ Everything is in `src/components/`. Each file opens with a comment explaining wh
 | `LevelGauge.astro` | Five-mark level gauge. Decorative for screen readers; emits one sentence ("Level 3 of 5") unless the caller states the level in text. |
 | `StatusChip.astro` | Fact-check status as a small `tag` (in lists) or a full inspection `stamp` (once per page, under the title). Each state has its own word and border style. A verified stamp names who checked the page (`OWNER_NAME`) and the `lastVerified` date. |
 | `GuideHub.astro` | "In this chapter" on every guide overview: the six levels as ruled lines (a written level is a link with its status tag; an unwritten one says so), then walkthrough and concept counts, the cheat sheet (linked once written), and the hazard mark. Same build-time data as the contents page. |
+| `Sources.astro` | The Sources section that closes every guide page except overviews and planned pages: a 2px rule, the monospace label, a one-line summary of what the list means for this page's status ("Not yet checked against these", "Being checked against these now", "Checked against these on <date>", "None listed yet"), then the numbered list of `sources` with publisher in monospace. A page with no sources gets a sentence saying so and pointing at the stamp, never silence. Rendered from frontmatter, so authors don't write a "Sources" heading (the templates say so). On paper each link prints its address. |
 
 ### Home page (`src/components/home/`)
 
@@ -188,7 +201,9 @@ Target: **WCAG 2.1 AA**.
 - **Never colour alone:** status tags and stamps pair a word with a distinct border style (dashed, solid, double, filled); difficulty and safety flags are text; the hazard mark is a character plus the words.
 - **Keyboard:** everything is a native link or button; visible yellow `:focus-visible` ring with an ink inner line so it shows on paper. Each contents line is one link. Starlight's skip link still targets the page `<h1>` (`id="_top"`).
 - **Screen readers:** decorative SVG and the gauge marks are `aria-hidden`; gauges emit one sentence unless the level is stated in text; the contents page uses real `<section aria-labelledby>`, `<h2>`/`<h3>`, `<dl>`, `<ol>`, and a real `<table>` for the tally.
-- **Motion:** `prefers-reduced-motion` honoured, including the stamp tilt. **Forced colours:** gauge marks fall back to `CanvasText`.
+- **Motion:** `prefers-reduced-motion` honoured, including the stamp tilt.
+- **Forced colours (Windows High Contrast):** everything drawn with a background fill has a fallback that survives the mode: gauge marks use `CanvasText`; the chapter tab has a border under its fill; the current nav section and hovered links underline; the sidebar's current page gets an outline; search matches underline. SVG fills (the cover mark) are not overridden by the mode and stay yellow.
+- **Reflow:** every page type lays out at 320 CSS px (WCAG 1.4.10; the equivalent of 400% zoom on a 1280 px window) with no horizontal scrolling. Rows that carry a status drop it to its own line under 30rem instead of overflowing.
 - **Wide tables:** a table that scrolls sideways becomes keyboard-focusable while it overflows (`MarkdownContent.astro`).
 
 ### Audit record: 2026-09-23 (version 2.0)
@@ -207,10 +222,24 @@ Both checks from the 1.2 audit were re-run against the dev server in headless Mi
 
 **Known limits of check 2.** It does not cover hover, active, or visited states; the open search dialog; placeholder text; or non-text graphics such as the gauge marks and stamp borders (those are ink on the canvas, ≥ 6:1 by construction).
 
+### Audit record: 2026-09-23, second pass (reflow, forced colours, print)
+
+Three checks the first pass had left undone, run the same way (headless Edge over the DevTools Protocol against the dev server):
+
+| Check | How | Result |
+| --- | --- | --- |
+| **Reflow at 320 px** (WCAG 1.4.10) | Nine page types at a 320 px-wide viewport; a probe lists every element whose box crosses the viewport edge, ignoring content in closed `<details>` and inside intentional scroll containers (tables, code). | **2 failures, both fixed.** The owner's note figures forced 3 × 6.5rem minimum widths (now three `minmax(0, 1fr)` grid columns, labels wrap); the "In this chapter" rows kept the status on the name's line (now wraps under the name below 30rem, matching the contents page). Re-run: 0 overflowing elements on all nine pages. |
+| **Forced colours** | `forced-colors: active` emulated (renders as Windows High Contrast Black: links yellow, text white, fills removed) on the contents page and a walkthrough. | Legible throughout. Fallbacks added where a fill was the only cue: nav current-section underline, chapter tab border, sidebar current-page outline, hover underlines, search-match underline. |
+| **Print** | Print media emulated at letter width with a light *and* a dark browser theme; walkthrough, chapter overview, CLI walkthrough (code blocks), contents page. | **Dark-theme printing was broken:** dark palette on paper, unreadable banner and aside text, pale code. Fixed by forcing the paper tokens and the light code colours under `@media print` (section 1, "Print"). Also trimmed the printed chrome and added the printed-from line. |
+
+### Audit record: 2026-09-23, third pass (new header block and Sources section)
+
+After the bench list, the level link, and the Sources section were added (v2.2), the same tools were re-run on a walkthrough (dark, light, phone), a concept page, and a cheat sheet: axe-core 0 violations; measured text contrast 0 failures (lowest 6.0:1, an aside title); reflow at 320 px 0 overflows on two walkthroughs; the Sources section checked in print (each link prints its address) and under forced colours. The new markup is a `<dl aria-label="What you need">` for the bench list and a `<section aria-labelledby>` with an `<h2>` for Sources, so both are landmarks a screen reader can list.
+
 **Still not done:**
 
-- No screen-reader pass by a person (NVDA, VoiceOver, or TalkBack). Automated tools catch only part of what a person would, so AA is **checked by tools, not certified**.
-- No test at 200% and 400% browser zoom, and no test with forced colours (Windows High Contrast) switched on.
+- No screen-reader pass by a person (NVDA, VoiceOver, or TalkBack). Automated tools catch only part of what a person would, so AA is **checked by tools, not certified**. The owner has said he will do this pass himself.
+- Forced colours were emulated, not run on a real Windows High Contrast desktop; print was checked as rendered CSS, not as a paginated PDF (no PDF renderer on the build machine).
 - The audit tools were one-off scripts and are not in the repo. Re-run an audit after any change to colours in `theme.css`.
 
 ## 6. Styling Conventions

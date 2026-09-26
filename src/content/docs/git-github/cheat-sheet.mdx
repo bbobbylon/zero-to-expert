@@ -1,6 +1,6 @@
 ---
 title: "Git & GitHub cheat sheet"
-description: "Git and GitHub commands and fixes grouped by how often you'll need them. Entries start from real problems that came up and got solved, then get checked against official docs — it grows with each one."
+description: "Git and GitHub commands and fixes grouped by how often you'll need them. The first entries came from real errors that got fixed on the spot; the everyday Git commands were added from Git's own documentation and run in a throwaway repo."
 domain: git-github
 pageType: cheatsheet
 status: draft
@@ -35,6 +35,96 @@ sources:
   - title: "Restoring a deleted repository"
     url: "https://docs.github.com/en/repositories/creating-and-managing-repositories/restoring-a-deleted-repository"
     publisher: "GitHub Docs"
+  - title: "git-config"
+    url: "https://git-scm.com/docs/git-config"
+    publisher: "Git documentation"
+  - title: "First-Time Git Setup"
+    url: "https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup"
+    publisher: "Pro Git book (git-scm.com)"
+  - title: "git-status"
+    url: "https://git-scm.com/docs/git-status"
+    publisher: "Git documentation"
+  - title: "git-add"
+    url: "https://git-scm.com/docs/git-add"
+    publisher: "Git documentation"
+  - title: "git-commit"
+    url: "https://git-scm.com/docs/git-commit"
+    publisher: "Git documentation"
+  - title: "git-diff"
+    url: "https://git-scm.com/docs/git-diff"
+    publisher: "Git documentation"
+  - title: "git-log"
+    url: "https://git-scm.com/docs/git-log"
+    publisher: "Git documentation"
+  - title: "git-switch"
+    url: "https://git-scm.com/docs/git-switch"
+    publisher: "Git documentation"
+  - title: "git-branch"
+    url: "https://git-scm.com/docs/git-branch"
+    publisher: "Git documentation"
+  - title: "git-merge"
+    url: "https://git-scm.com/docs/git-merge"
+    publisher: "Git documentation"
+  - title: "git-checkout"
+    url: "https://git-scm.com/docs/git-checkout"
+    publisher: "Git documentation"
+  - title: "git-clone"
+    url: "https://git-scm.com/docs/git-clone"
+    publisher: "Git documentation"
+  - title: "git-fetch"
+    url: "https://git-scm.com/docs/git-fetch"
+    publisher: "Git documentation"
+  - title: "git-pull"
+    url: "https://git-scm.com/docs/git-pull"
+    publisher: "Git documentation"
+  - title: "git-restore"
+    url: "https://git-scm.com/docs/git-restore"
+    publisher: "Git documentation"
+  - title: "git-stash"
+    url: "https://git-scm.com/docs/git-stash"
+    publisher: "Git documentation"
+  - title: "git-rebase"
+    url: "https://git-scm.com/docs/git-rebase"
+    publisher: "Git documentation"
+  - title: "git-cherry-pick"
+    url: "https://git-scm.com/docs/git-cherry-pick"
+    publisher: "Git documentation"
+  - title: "git-reflog"
+    url: "https://git-scm.com/docs/git-reflog"
+    publisher: "Git documentation"
+  - title: "git-reset"
+    url: "https://git-scm.com/docs/git-reset"
+    publisher: "Git documentation"
+  - title: "git-revert"
+    url: "https://git-scm.com/docs/git-revert"
+    publisher: "Git documentation"
+  - title: "git-tag"
+    url: "https://git-scm.com/docs/git-tag"
+    publisher: "Git documentation"
+  - title: "git-rm"
+    url: "https://git-scm.com/docs/git-rm"
+    publisher: "Git documentation"
+  - title: "Ignoring files"
+    url: "https://docs.github.com/en/get-started/git-basics/ignoring-files"
+    publisher: "GitHub Docs"
+  - title: "git-worktree"
+    url: "https://git-scm.com/docs/git-worktree"
+    publisher: "Git documentation"
+  - title: "git-bisect"
+    url: "https://git-scm.com/docs/git-bisect"
+    publisher: "Git documentation"
+  - title: "git-blame"
+    url: "https://git-scm.com/docs/git-blame"
+    publisher: "Git documentation"
+  - title: "git-clean"
+    url: "https://git-scm.com/docs/git-clean"
+    publisher: "Git documentation"
+  - title: "Git Branching - Rebasing"
+    url: "https://git-scm.com/book/en/v2/Git-Branching-Rebasing"
+    publisher: "Pro Git book (git-scm.com)"
+  - title: "Removing sensitive data from a repository"
+    url: "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository"
+    publisher: "GitHub Docs"
 tags: [git, github, gh-cli, ssh, cheat-sheet]
 sidebar:
   order: 90
@@ -42,18 +132,130 @@ sidebar:
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-Every entry below started as a real error message, not a docs read-through: `git push` or `gh repo create` failed on a real push, the fix got tried, and it worked. The specific commands are then checked against GitHub's and Git's own documentation before being listed here — see the sources above.
+This sheet has two kinds of entries, and it's worth knowing which is which. The GitHub CLI and SSH rows — `gh auth setup-git`, the remote-URL switch, the SSH key setup, and the two Rare rows about `gh repo create` and `Permission denied (publickey)` — each started as a real error message on a real push: the fix got tried, it worked, and then it got checked against GitHub's and Git's own documentation. The everyday Git commands (status, add, commit, branches, stash, reset, and the rest) were added afterwards from Git's reference pages at git-scm.com/docs and the Pro Git book, and each one was run in a throwaway repo on Git 2.49 for Windows before landing here. Anything not run says so in a `TODO(test)` note next to its section. Every page used is listed in the sources at the end.
 
 ## Common
 
+Git Bash and PowerShell run these identically, so there are no shell tabs in this section.
+
+### Identity, once per machine
+
 | Command | What it does |
 | --- | --- |
+| `git config --global user.name "Your Name"` | Sets the name recorded on every commit you make. `--global` writes to your per-user file (`~/.gitconfig`) instead of the current repo's `.git/config`, so it covers every repo on the machine. |
+| `git config --global user.email you@example.com` | Same, for the email address. |
+| `git config get user.name` | Prints the value Git will actually use in this repo (a repo-level setting wins over the global one). The older spelling, `git config user.name` with no value, does the same. |
+| `git config list` | Every setting in effect, from all config files together. Add `--global` to see only the per-user file. |
+
+:::note
+Git's `config` page now lists subcommands — `git config set`, `git config get`, `git config list` — as the replacements for the older `git config <name> <value>` and `git config --list` forms. Both spellings work on Git 2.49, and the Pro Git book still teaches the older one, so you'll see both in the wild.
+:::
+
+### The daily loop
+
+| Command | What it does |
+| --- | --- |
+| `git status` | What's staged, what's changed but not staged, and what's untracked. Run it before and after almost everything. |
+| `git status -sb` | The same in a two-letter-code short format, with the branch and how far ahead or behind its upstream it is on the first line. |
+| `git add <file>` | Stages that file's current contents for the next commit. Edit the file again afterwards and you have to `git add` it again — the stage holds the version you added, not the file. |
+| `git add .` | Stages everything under the current directory. |
+| `git add -A` | Stages every change in the whole working tree, including deleted files. |
+| `git add -p` | Walks through each changed hunk and asks whether to stage it — for committing part of a file. |
+| `git commit -m "message"` | Records what's staged as a new commit with that message. Nothing unstaged goes in. |
+| `git commit -a -m "message"` | Stages every modified or deleted *tracked* file first, then commits. New files Git doesn't know about yet are not picked up. |
+| `git commit --amend` | Replaces the last commit with a new one built from the current staging area; the old message is the starting point. `--no-edit` keeps the message as is, `-m` replaces it. Don't amend a commit that's already been pushed — that rewrites history other people may already have. |
+| `git diff` | Changes in the working tree that are not staged yet. |
+| `git diff --staged` | Changes that are staged — exactly what the next `git commit` will contain. `--cached` is the same option. |
+| `git diff <commit> <commit>` | Everything that changed between two commits. |
+| `git log --oneline --graph --all` | One line per commit, with a text graph of branches and merges, across every branch. Add `-<n>` (for example `-5`) to limit the count. |
+| `git log -p -1` | The last commit with its full diff. |
+
+### Branches
+
+| Command | What it does |
+| --- | --- |
+| `git switch <branch>` | Move to that branch: the working tree and staging area update to match, and new commits go on its tip. |
+| `git switch -c <new-branch>` | Create a branch from where you are and switch to it, in one step. |
+| `git switch -` | Back to the branch you were on before — for bouncing between two branches, or undoing a switch you didn't mean. |
+| `git branch` | List local branches; `*` marks the current one. `-vv` adds each branch's last commit and upstream; `-a` includes remote-tracking branches. |
+| `git branch -m <old> <new>` | Rename a branch. |
+| `git branch -d <branch>` | Delete a branch that's already merged. Git refuses if it isn't — `-D` overrides that, so use it only when you mean to throw the commits away. |
+| `git merge <branch>` | Bring that branch's commits into the current one. If the current branch hasn't moved since the two split, Git just fast-forwards the pointer; otherwise it creates a merge commit. `--no-ff` forces a merge commit even when a fast-forward was possible. |
+
+### Remotes and GitHub
+
+| Command | What it does |
+| --- | --- |
+| `git clone <url>` | Copies a repository into a new directory, checks out its default branch, and names the source remote `origin`. |
 | `gh auth setup-git` | Configures `git` to use the GitHub CLI as its credential helper for every host you're authenticated with in `gh`. If `gh repo create`/`gh repo view` already works, this makes plain `git push`/`git pull` over HTTPS work too — no separate token or SSH key needed. |
 | `git remote set-url origin https://github.com/<user>/<repo>.git` | Switches an existing remote from SSH (`git@github.com:...`) to HTTPS, so it authenticates via `gh auth setup-git` instead of an SSH key. |
 | `git remote -v` | Shows the current remote URL(s) — check this first when a push fails, to see whether `origin` is SSH or HTTPS. |
+| `git fetch` | Downloads new commits and branches from the remote and updates your `origin/...` remote-tracking branches. It touches nothing you're working on. `--prune` also drops remote-tracking branches the remote has deleted. |
+| `git pull` | `git fetch`, then integrate the upstream branch into the current one. With no `pull.rebase` setting it only fast-forwards, and refuses if the two branches have diverged — at that point pick `git pull --rebase` (if your local commits aren't pushed yet) or set `pull.rebase` once. |
+| `git push` | Sends the current branch's new commits to its upstream, once `-u` has recorded one (next row). |
 | `git push -u origin main` | Pushes and, with `-u`, records `origin main` as this branch's upstream (tracking) reference, which argument-less `git pull` and other commands use afterward. |
 
+### Undo the small stuff
+
+| Command | What it does |
+| --- | --- |
+| `git restore <file>` | Throw away unstaged edits to that file, putting back the staged version. There's no undo for this. |
+| `git restore --staged <file>` | Unstage the file (staging area back to `HEAD`) but keep the edits in the working tree. |
+| `git stash` | Park all uncommitted changes, staged and unstaged, and reset the working tree to `HEAD` so you can switch branches cleanly. Same as `git stash push`. |
+| `git stash push -u -m "note"` | Stash with a label, and include untracked files too. |
+| `git stash list` | The parked entries: `stash@{0}` is the newest. |
+| `git stash pop` | Reapply the newest entry and drop it from the list. `git stash apply` reapplies and keeps it; `git stash drop` removes it without applying. |
+
+### Why `switch` and `restore`, not `checkout`
+
+`git checkout` does two unrelated jobs: switch branches, and overwrite a file with an older version. Git's own `checkout` page points to `git switch` and `git restore` as the two commands those jobs were split into, and this sheet uses them because each does exactly one thing — a branch name you misremember can't turn into a file being silently overwritten. Older tutorials still show the `checkout` forms, so here's the mapping:
+
+| Job | Older form | Use instead |
+| --- | --- | --- |
+| Switch branch | `git checkout <branch>` | `git switch <branch>` |
+| New branch and switch to it | `git checkout -b <name>` | `git switch -c <name>` |
+| Discard edits to a file | `git checkout -- <file>` | `git restore <file>` |
+| Unstage a file | `git reset -- <file>` | `git restore --staged <file>` |
+| Look at an old commit without a branch | `git checkout <hash>` | `git switch --detach <hash>` |
+
+> TODO(test): `git add -p` is interactive and wasn't run for this page, and neither were `git merge --no-ff` or `git pull --rebase`. No `git push` of any kind was run while writing this page — the `git push -u origin main` row is from the owner's real push, the plain `git push` row is from the docs. `git clone` was run against a local path, not a GitHub URL.
+
 ## Uncommon
+
+Reach for these a few times a month. Each one moves history around, so read the row before the command.
+
+### History surgery and recovery
+
+| Command | What it does |
+| --- | --- |
+| `git rebase <base>` | Replays the current branch's commits, one by one, on top of `<base>`, so the history reads as a straight line instead of a merge. Only rebase commits that exist just in your repo: rewriting commits others have already pulled forces everyone downstream to repair their history by hand. |
+| `git rebase -i <base>` | Interactive: opens the list of commits about to be replayed so you can reorder, reword, squash, or split them before Git runs the replay. |
+| Conflict during a merge, rebase, or cherry-pick | Git stops and names the files. Fix each one, `git add` it, then `git merge --continue`, `git rebase --continue`, or `git cherry-pick --continue`. To back out instead, the same commands with `--abort` return you to where you started. |
+| `git cherry-pick <hash>` | Copy one commit from anywhere onto the current branch as a new commit. `-x` appends a "cherry picked from commit" line to the message, which is what you want when backporting between public branches. |
+| `git reflog` | Where `HEAD` has pointed, move by move, in this local repo — including commits no branch points to anymore. `HEAD@{2}` means "two moves ago". Entries expire (90 days by default, 30 for unreachable ones), so it's a safety net, not an archive. |
+| `git reset <mode> <commit>` | Move the current branch to `<commit>`; the mode decides what happens to the staging area and your files (table below). |
+| `git reset <file>` | Unstage one file; same as `git restore --staged <file>`. |
+| `git revert <hash>` | Make a new commit that undoes what `<hash>` did. Nothing is rewritten, so it's the safe undo for anything already pushed. `--no-edit` skips the editor. |
+| `git tag -a v1.0 -m "message"` | Annotated tag: a full object with tagger, date, and message — the kind releases should use. `git tag v1.0` alone makes a lightweight tag (a bare pointer, for private labels). `git tag` lists them, `-d` deletes one. Tags are not pushed by default: `git push origin v1.0` for one, `git push --tags` for all. |
+| `git rm --cached <file>` | Stop tracking a file but leave it on disk — the fix when something got committed before it was added to `.gitignore`. Add the ignore rule, run this, commit. |
+| `git worktree add -b <branch> <path>` | Check out a second branch in a second directory that shares the same repo — a hotfix without stashing what you're in the middle of. `git worktree list` shows them, `git worktree remove <path>` removes a clean one, `git worktree prune` cleans up after directories deleted by hand. |
+| `git bisect start <bad> <good>` | Binary search for the commit that broke something. Git checks out a commit halfway between the two, you test and answer `git bisect good` or `git bisect bad`, and it repeats until it names the first bad commit. `git bisect reset` puts you back where you started. `git bisect run <cmd>` automates the testing with a command that exits 0 for good. |
+| `git blame -L 10,20 <file>` | Which commit and author last touched each line, limited to lines 10–20. `-w` ignores whitespace-only changes when tracing. |
+| `git clean -n` | Dry run: lists the untracked files `git clean` would delete. `-nd` includes untracked directories. Only then `git clean -f` (or `-fd`) to actually delete. Git refuses to delete anything unless given `-f`, `-i`, or `-n`. |
+
+### Which `git reset` mode?
+
+All three move the current branch to the target commit. They differ in what they do to the staging area and the working tree:
+
+| Mode | Staging area | Working tree (your files) | Reach for it when |
+| --- | --- | --- | --- |
+| `--soft` | Kept as it was, so the undone commits' changes sit there staged | Untouched | Squashing the last few commits into one: `git reset --soft HEAD~3`, then `git commit` |
+| `--mixed` (the default) | Reset to match the target commit; nothing is staged | Untouched, so the changes are still there, unstaged | Undoing a commit but keeping the edits to re-stage differently |
+| `--hard` | Reset | Overwritten to match the target — local changes are gone, and untracked files can be overwritten too | Throwing local work away on purpose, and only then |
+
+> TODO(test): `git rebase -i`, the `--continue` forms, `git cherry-pick --abort`, `git reset <file>`, `git bisect run`, `git blame -w`, both tag push forms, and `git clean -x`/`-i` come from the docs and weren't run for this page. Everything else in this section was run in the throwaway repo, including `git merge --abort` and `git rebase --abort` on a real conflict.
+
+### SSH key setup
 
 Only needed once per machine — most days you won't touch these at all.
 
@@ -96,8 +298,15 @@ These are decision points, not single commands — read the situation, and the l
 | --- | --- | --- |
 | `gh repo create <name> ...` fails with `GraphQL: Name already exists on this account (createRepository)` | A repo with that name already exists on your account. Run `gh repo view <user>/<name>` first to see what's in it, then pick one: reuse it (`git remote add origin <its-url>` and push, skipping `repo create` entirely), choose a different name for the new repo, or delete it with `gh repo delete <user>/<name> --yes` if it's confirmed empty and unwanted. Deleting needs the `delete_repo` scope first (`gh auth refresh -s delete_repo`), and `--yes` skips the confirmation prompt, so double-check the name. GitHub can restore a deleted repo for 90 days, with exceptions for fork networks — treat the delete as destructive anyway. | [gh repo create](https://cli.github.com/manual/gh_repo_create), [gh repo view](https://cli.github.com/manual/gh_repo_view), [gh repo delete](https://cli.github.com/manual/gh_repo_delete), [Restoring a deleted repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/restoring-a-deleted-repository) |
 | `git push` fails with `Permission denied (publickey)` on a `git@github.com:...` remote | GitHub rejected the SSH connection — most often no key is loaded in the agent, or the public key isn't added to your GitHub account. Either switch the remote to HTTPS and run `gh auth setup-git` (fast, if `gh` is already logged in), or set up an SSH key with the Uncommon commands above. | [Error: Permission denied (publickey)](https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey), [gh auth setup-git](https://cli.github.com/manual/gh_auth_setup-git) |
+| The last commit was a mistake | First: has it been pushed? **Not pushed:** `git reset --soft HEAD~1` removes the commit and leaves its changes staged; plain `git reset HEAD~1` leaves them unstaged; `git reset --hard HEAD~1` discards them entirely. **Already pushed:** don't reset — `git revert HEAD` adds a new commit that undoes it, and nobody who pulled the original has to repair anything. | [git-reset](https://git-scm.com/docs/git-reset), [git-revert](https://git-scm.com/docs/git-revert) |
+| A branch was deleted by mistake | The commits still exist; only the pointer is gone. `git branch -d` prints the hash it deleted (`Deleted branch feature (was fe7ee15)`), so if that's still on screen, use it. Otherwise `git reflog` lists every commit `HEAD` has visited, including the ones made on that branch — find the last one and recreate the pointer with `git branch <name> <hash>`. This works only while the reflog entries survive (90 days by default, 30 for unreachable commits), so do it soon. | [git-reflog](https://git-scm.com/docs/git-reflog), [git-branch](https://git-scm.com/docs/git-branch) |
+| You rebased or amended a branch you'd already pushed, and `git push` is refused | The remote branch is no longer an ancestor of yours, so the push is rejected on purpose. `git push --force` disables that check and every other safety check with it — if a teammate pushed to the branch in the meantime, their commits vanish. `git push --force-with-lease` overwrites only if the remote branch still points where your last fetch saw it; if someone else has pushed since, it fails instead of losing their work. Use the lease form, on your own branch, and never on a branch other people base work on — the Pro Git rule is to rebase local commits before pushing and nothing after. | [git-push](https://git-scm.com/docs/git-push), [Git Branching - Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) |
+| A secret (token, password, key file) got committed | Rotate or revoke the secret first, before anything else — once it's in history it's in every clone, and cleaning the repo doesn't un-leak it. Then: **only staged, not committed:** `git restore --staged <file>`, add it to `.gitignore`. **Committed but not pushed:** `git reset --soft HEAD~1`, `git restore --staged <file>`, add the ignore rule, `git rm --cached <file>` if it was tracked earlier, recommit. **Pushed:** follow GitHub's page for rewriting the history with `git filter-repo` and force-pushing the result; it also explains why the data can still exist in forks, cached views, and pull requests, and when to contact GitHub Support to purge those. Removing the file in a new commit is not enough — the old commit still holds it. | [Removing sensitive data from a repository](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository), [Ignoring files](https://docs.github.com/en/get-started/git-basics/ignoring-files), [git-rm](https://git-scm.com/docs/git-rm) |
+| `git status` says `HEAD detached at <hash>` (short form: `## HEAD (no branch)`) | You're standing on a commit, not a branch — usually after checking out a hash or a tag to look around. Nothing is wrong yet, but commits you make here belong to no branch, and Git will eventually garbage-collect them once you move away. If you made commits you want to keep: `git switch -c <name>` puts them on a new branch right where you are. If you didn't: `git switch main` (or `git switch -` to go back to wherever you came from). | [git-checkout, DETACHED HEAD](https://git-scm.com/docs/git-checkout#_detached_head), [git-switch](https://git-scm.com/docs/git-switch) |
 
 > TODO(test): `gh auth refresh -s delete_repo` and `gh repo delete <user>/<name> --yes` come from the GitHub CLI manual and haven't been run for this page yet.
+
+> TODO(test): `git push --force-with-lease` and `git push --force` come from the docs and weren't run for this page (no pushes were made at all while writing it). The reset, revert, reflog-recovery, and detached-`HEAD` rows were run in the throwaway repo; the secret-removal row's `git filter-repo` step was not.
 
 ## Files and locations
 
@@ -105,3 +314,5 @@ These are decision points, not single commands — read the situation, and the l
 | --- | --- |
 | `~/.ssh/id_ed25519`, `~/.ssh/id_ed25519.pub` | The private/public SSH key pair (Git Bash and PowerShell both read the same `~/.ssh/`). |
 | `~/.gitconfig` | Where `gh auth setup-git` writes the `credential.https://github.com.helper` entry. |
+| `.git/config` | The current repo's own settings — what `git config` writes to when you leave off `--global`. |
+| `.gitignore` | Patterns for files Git should not track, committed with the project. Adding a rule doesn't untrack a file that's already committed; see `git rm --cached` above. |

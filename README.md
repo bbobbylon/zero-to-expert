@@ -97,18 +97,18 @@ Renaming the repo or adding a custom domain later needs no code change.
 .github/workflows/deploy.yml  CI/CD to GitHub Pages
 src/domains.mjs               the list of guides (drives the sidebar and the schema)
 src/content.config.ts         frontmatter schema + fact-check rules
-src/routeData.ts              "not fact-checked" banner from each page's status
+src/routeData.ts              "not fact-checked" banner from each page's status; Sources in "On this page"; verified-page gap check
 src/plugins/base-links.mjs    base-path rewriting for Markdown links
 src/site.mjs                  site identity: GitHub repo and contact URLs, owner's first name
 src/styles/theme.css          design tokens and global styles ("The Manual" theme)
-src/components/               UI chrome: header nav, cover, page header block with stamp, footer
+src/components/               UI chrome: header nav, cover, page header block with stamp and bench list, sources section, footer
 src/components/home/          the home page's sections (owner's note, contents, level ruler, jobs, inspection log)
 src/lib/                      build-time helpers: contents/chapter stats, level names, base-aware links
 src/pages/index.astro         the home page (the manual's contents page), computed from the content
 src/content/docs/             all pages; one folder per guide
 public/                       favicon and og.png, the image link previews show (source: docs/og-image.html)
 docs/                         SRS (requirements), ARCHITECTURE, UI-DESIGN (design system), DEPLOYMENT (ship, verify, roll back)
-templates/                    level, walkthrough, and cheat sheet templates
+templates/                    overview, level, concept, walkthrough, and cheat sheet templates
 CLAUDE.md                     rules for AI agents working in this repo
 run.sh / run.ps1 / run.cmd    the one entry point: setup, dev, build, start, check, pages, clean
 ```
@@ -116,10 +116,10 @@ run.sh / run.ps1 / run.cmd    the one entry point: setup, dev, build, start, che
 ## Writing content
 
 1. Copy a template from `templates/` into `src/content/docs/<guide>/`.
-2. Fill in the frontmatter. New pages start as `status: draft` and show a warning banner.
+2. Fill in the frontmatter. New pages start as `status: draft` and show a warning banner. `tools`, `parts`, and `sources` render themselves (under the title and at the end of the page), so don't write those sections in the body.
 3. Link to other pages with root links: `[Level 0](/aws/levels/0-orientation/)`.
 4. Run `./run.sh check` (Windows: `run check`). Fix anything it reports.
-5. After checking every claim against the listed sources, set `status: verified` and `lastVerified: YYYY-MM-DD`.
+5. After checking every claim against the listed sources and resolving every `TODO(source)` and `TODO(test)`, set `status: verified` and `lastVerified: YYYY-MM-DD`.
 
 To add a new guide, add it to `src/domains.mjs` and create `src/content/docs/<slug>/index.md`.
 
@@ -130,7 +130,7 @@ To add a new guide, add it to `src/domains.mjs` and create `src/content/docs/<sl
 | `planned` | "This guide is planned" | nothing |
 | `draft` | "Not fact-checked yet" | nothing |
 | `review` | "Sources are being checked" | a source, if `safetyCritical: true` |
-| `verified` | none | `lastVerified` and at least one source |
+| `verified` | none | `lastVerified`, at least one source, and no `TODO(source)` or `TODO(test)` left in the body |
 
 The full content model and writing rules are in [CLAUDE.md](./CLAUDE.md).
 
@@ -145,7 +145,7 @@ The full content model and writing rules are in [CLAUDE.md](./CLAUDE.md).
 
 ## Upgrading
 
-`@astrojs/markdown-satteri` is listed directly because `astro.config.mjs` imports it. Astro depends on an exact version of it, so upgrade the two together (`npm i astro@latest @astrojs/markdown-satteri@<version astro uses>`), then run `npm run build`.
+`@astrojs/markdown-satteri` is listed directly because `astro.config.mjs` imports it. Astro depends on an exact version of it, so upgrade the two together (`npm i astro@latest @astrojs/markdown-satteri@<version astro uses>`), then run `./run.sh check` (Windows: `run check`).
 
 ## Troubleshooting
 
@@ -153,9 +153,9 @@ The full content model and writing rules are in [CLAUDE.md](./CLAUDE.md).
 | --- | --- | --- |
 | Live site loads without styles, or every link 404s | Site built without the base path | Check that `BASE_PATH` is set in the workflow's build step. Reproduce locally with `run pages`. |
 | Actions run fails at "Read GitHub Pages settings" | Pages not enabled | Settings → Pages → Source: GitHub Actions, then re-run |
-| Build warns `The collection "i18n" does not exist` | Starlight checks for optional translations | Harmless; the site doesn't use translations |
-| A new Levels or Walkthroughs folder doesn't show in the sidebar | The sidebar is built when the config loads | Restart `npm run dev` |
+| A new Levels or Walkthroughs folder doesn't show in the sidebar | The sidebar is built when the config loads | Restart the dev server (`run dev`) |
 | Build error naming a frontmatter field | A fact-check rule failed | The message names the file, field, and rule |
+| Build error `status is "verified" but the page still has TODO(source) ... markers` | A verified page still has a marked gap in its body | Resolve the gap, or set the page back to `review` |
 
 ## Roadmap
 

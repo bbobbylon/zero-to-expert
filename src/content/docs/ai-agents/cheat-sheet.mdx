@@ -1,0 +1,224 @@
+---
+title: "Cheat sheet"
+description: "Claude Code shell commands, session commands, and keyboard shortcuts, by how often you need them."
+domain: ai-agents
+pageType: cheatsheet
+status: draft
+sources:
+  - title: "CLI reference"
+    url: "https://code.claude.com/docs/en/cli-reference"
+    publisher: "Claude Code documentation"
+  - title: "Commands"
+    url: "https://code.claude.com/docs/en/commands"
+    publisher: "Claude Code documentation"
+  - title: "Interactive mode"
+    url: "https://code.claude.com/docs/en/interactive-mode"
+    publisher: "Claude Code documentation"
+  - title: "Choose a permission mode"
+    url: "https://code.claude.com/docs/en/permission-modes"
+    publisher: "Claude Code documentation"
+  - title: "Connect Claude Code to tools via MCP"
+    url: "https://code.claude.com/docs/en/mcp"
+    publisher: "Claude Code documentation"
+  - title: "How Claude remembers your project"
+    url: "https://code.claude.com/docs/en/memory"
+    publisher: "Claude Code documentation"
+  - title: "Settings files and precedence"
+    url: "https://code.claude.com/docs/en/settings"
+    publisher: "Claude Code documentation"
+  - title: "Overview"
+    url: "https://code.claude.com/docs/en/overview"
+    publisher: "Claude Code documentation"
+tags: [claude-code, cli, cheat-sheet, shortcuts]
+sidebar:
+  order: 90
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Three kinds of control, grouped by how often you reach for them. **Shell commands** start or manage Claude Code from your terminal. **Session commands** start with `/` and run inside a session. **Shortcuts** are keys you press while it works. Every shell flag below appears in `claude --help` on version 2.1.260 (checked 2026-09-25); the session commands and shortcuts are from the documentation.
+
+> TODO(test): `claude --version` and `claude --help` were run for this page. Commands that start or change a session were not exercised while writing it.
+
+## Common
+
+### Shell commands
+
+| Command | What it does |
+| --- | --- |
+| `claude` | Start an interactive session in the current folder. |
+| `claude "fix the build error"` | Start a session with a first prompt. |
+| `claude -p "explain this function"` | Print the answer and exit; use it in scripts and pipes. `cat file \| claude -p "summarise"` works. |
+| `claude -c` | Continue the most recent conversation in this folder. |
+| `claude -r` | Pick an earlier conversation to resume (or `claude -r "<id or name>"`). |
+| `claude --model sonnet` | Choose the model for the session, by alias (`opus`, `sonnet`, `fable`) or full name. |
+| `claude --permission-mode plan` | Start in a given mode: `plan`, `default` (Manual), `acceptEdits`, `auto`, `dontAsk`. |
+| `claude --version` | Print the version. |
+| `claude update` | Update to the latest version (native installs also update themselves). |
+
+### Session commands
+
+| Command | What it does |
+| --- | --- |
+| `/help` | List the commands available to you. Typing `/` alone shows commands and skills. |
+| `/clear` | Start a new conversation with an empty context. |
+| `/compact` | Summarise the conversation to free context. `/compact focus on the API changes` keeps what you name. |
+| `/context` | Show what is using the context window. |
+| `/model` | Switch model mid-session. |
+| `/init` | Write a starting `CLAUDE.md` from what it finds in the project; suggests improvements if one exists. |
+| `/memory` | Edit the `CLAUDE.md` files and manage auto memory. |
+| `/resume` | Return to an earlier conversation. |
+| `/rewind` | Roll code and conversation back to a checkpoint. |
+| `/diff` | Review the changes in your working tree. |
+| `/status` | Session status: model, account, which settings files were read. |
+| `/usage` (or `/cost`) | Token usage and cost. |
+| `/exit` | Leave. |
+
+### Shortcuts
+
+| Keys | What it does |
+| --- | --- |
+| `Esc` | Interrupt Claude mid-step (work so far is kept), or close a dialog. On a permission prompt, it declines. |
+| `Esc` `Esc` | With text typed: clear it. With an empty prompt: open the rewind menu. |
+| `Shift+Tab` | Cycle permission modes: Manual, `acceptEdits`, `plan`, and (when available) `bypassPermissions` and `auto`. |
+| `Ctrl+C` | Interrupt a running operation; with nothing running, clears the input, and a second press exits. |
+| `Ctrl+D` (twice) | Exit. |
+| `↑` / `↓` | Command history (once the cursor is on the first or last row of the input). |
+| `Tab` | Accept an autocomplete suggestion. |
+| `Ctrl+R` | Search command history. |
+| `Ctrl+L` | Redraw a garbled screen. |
+| `!` at the start | Shell mode: run a command directly and add its output to the session. |
+| `@` | File path autocomplete: mention a file for Claude to read. |
+| `/` at the start | A command or skill. |
+
+## Uncommon
+
+### Shell commands
+
+| Command | What it does |
+| --- | --- |
+| `claude --add-dir ../other-repo` | Let Claude read and edit an extra folder. |
+| `claude --allowedTools "Bash(git *)" "Edit"` | Tools that run without a prompt. `--disallowedTools` is the deny list. |
+| `claude -p "..." --output-format json` | Machine-readable output in print mode (`text`, `json`, `stream-json`). |
+| `claude -p "..." --max-budget-usd 2` | Stop when spending reaches the amount (print mode). |
+| `claude --effort high` | Effort level for the session: `low`, `medium`, `high`, `xhigh`, `max`. |
+| `claude --fork-session -r <id>` | Resume into a *new* session ID, leaving the original untouched. |
+| `claude -n "rename-auth"` | Give the session a display name for the `/resume` picker. |
+| `claude --ide` | Connect to the open IDE when exactly one is available. |
+| `claude --bg` | Start the session in the background and print its id; `claude agents`, `claude attach <id>`, `claude logs <id>`, `claude stop <id>`, `claude rm <id>` manage it. |
+| `claude auth status` | Show authentication status as JSON. `claude auth login` / `claude auth logout` sign in and out. |
+| `claude setup-token` | Create a long-lived token for CI and scripts (needs a subscription). |
+| `claude doctor` | Read-only diagnostics of the installation and settings from the terminal. |
+| `claude mcp add --transport http <name> <url>` | Add a remote MCP server. Local process form: `claude mcp add <name> -- <command> [args...]`. Add `--scope project` to share it via `.mcp.json`, `--scope user` for all your projects. |
+| `claude mcp list` / `get <name>` / `remove <name>` | See, inspect, and remove configured MCP servers. |
+| `claude plugin` | Manage plugins. |
+| `claude ultrareview` | Run a cloud multi-agent review of the current branch non-interactively (also `/code-review ultra` in a session). |
+
+> TODO(test): `--max-turns` is in the CLI reference but does not appear in `claude --help` on 2.1.260, so it is left out of the table until checked.
+
+### Session commands
+
+| Command | What it does |
+| --- | --- |
+| `/permissions` | Manage allow, ask, and deny rules for tools. |
+| `/hooks` | View configured hooks (read-only; edit the settings JSON to change them). |
+| `/mcp` | MCP server status, OAuth sign-in, enable or disable a server. |
+| `/agents` | Reminder of how to create subagents (edit `.claude/agents/` directly). |
+| `/plan` | Enter plan mode from the prompt. |
+| `/branch` | Copy the conversation into a new one to try a different direction. |
+| `/btw` | Ask a side question without adding it to the conversation. |
+| `/subtask` | Hand a side task to a subagent. |
+| `/tasks` | List background shells and subagents in this session. |
+| `/export` | Save the conversation as plain text. |
+| `/copy` | Copy the last response to the clipboard. |
+| `/effort` | Set or check the effort level. |
+| `/fast` | Toggle fast mode. |
+| `/config` | Settings UI. |
+| `/doctor` | Setup checkup that can also fix issues. |
+| `/login` / `/logout` | Switch accounts. |
+| `/theme` | Display theme. |
+| `/keybindings` | Open your keyboard-shortcuts file. |
+| `/add-dir` | Add a working directory for this session. |
+| `/cd` | Move the session to another folder. |
+| `/loop` | Run a prompt repeatedly on a schedule. |
+| `/bug` / `/feedback` | Report a bug or send feedback. |
+
+### Shortcuts
+
+| Keys | What it does |
+| --- | --- |
+| `Ctrl+O` | Transcript viewer: every tool call in detail. |
+| `Ctrl+B` | Background the running command or agent. |
+| `Ctrl+T` | Toggle Claude's task checklist. |
+| `Ctrl+S` | Stash the typed prompt; press again on an empty prompt to restore it. |
+| `Ctrl+G` | Edit the prompt in your default text editor. |
+| `Ctrl+V` (`Alt+V` on Windows and WSL) | Paste an image from the clipboard. |
+| `Alt+P` (`Option+P` on macOS) | Switch model without losing the typed prompt. |
+| `Alt+T` (`Option+T`) | Toggle extended thinking (no effect on models that always think). |
+| `Ctrl+Z` | Suspend to the shell (Unix); `fg` to come back. |
+| `/vim` (in `/config`) | Vim keys in the input: `Esc` for NORMAL mode, `i` to insert, `dd`, `yy`, `p`, `u`. |
+
+:::note
+On macOS, `Alt`/`Option` shortcuts such as `Alt+B` and `Alt+F` need Option set as Meta in your terminal; the interactive-mode documentation links the setting for each terminal.
+:::
+
+## Rare
+
+:::caution
+Rare commands are the easiest to get wrong. Each one links to its official documentation. These change what the agent is allowed to do or delete local state; read the row before you type it.
+:::
+
+| Command | What it does | Source |
+| --- | --- | --- |
+| `claude --dangerously-skip-permissions` | Bypass every permission check. The help text: recommended only for sandboxes with no internet access. Deny rules still apply; allow rules are ignored. | [Permission modes](https://code.claude.com/docs/en/permission-modes) |
+| `claude --allow-dangerously-skip-permissions` | Put `bypassPermissions` in the `Shift+Tab` cycle without starting in it. | [CLI reference](https://code.claude.com/docs/en/cli-reference) |
+| `claude -p "..." --permission-mode dontAsk --allowedTools "Bash(npm test)" "Read"` | The locked-down CI shape: only the listed tools run; anything that would prompt is denied. | [Permission modes](https://code.claude.com/docs/en/permission-modes) |
+| `claude project purge [path]` | Delete all local Claude Code state for a project: sessions, checkpoints, and auto memory. Not undoable. | [CLI reference](https://code.claude.com/docs/en/cli-reference) |
+| `claude --safe-mode` | Start with every customisation (CLAUDE.md, skills, plugins, hooks, MCP servers, keybindings) disabled, to find which one broke a session. | [CLI reference](https://code.claude.com/docs/en/cli-reference) |
+| `claude --bare` | Minimal mode for scripts: no hooks, plugins, auto memory, or CLAUDE.md discovery; only `ANTHROPIC_API_KEY` auth. | [CLI reference](https://code.claude.com/docs/en/cli-reference) |
+| `claude --skip-mcp-discovery` | Don't load MCP servers from settings or CLAUDE.md this session. | [CLI reference](https://code.claude.com/docs/en/cli-reference) |
+| `claude --system-prompt "..."` | Replace the default system prompt entirely. `--append-system-prompt` adds to it instead, which is almost always what you want. | [CLI reference](https://code.claude.com/docs/en/cli-reference) |
+| `claude install [stable\|latest\|<version>]` | Install or reinstall the native binary, optionally pinned. | [CLI reference](https://code.claude.com/docs/en/cli-reference) |
+| `curl -fsSL https://claude.ai/install.sh \| bash` / `irm https://claude.ai/install.ps1 \| iex` | First install on macOS/Linux/WSL and on Windows PowerShell. Native installs auto-update; Homebrew (`brew install --cask claude-code`) and WinGet (`winget install Anthropic.ClaudeCode`) do not. | [Overview](https://code.claude.com/docs/en/overview) |
+
+## Files and locations
+
+<Tabs syncKey="os">
+  <TabItem label="Windows">
+
+| Path | What it is |
+| --- | --- |
+| `%USERPROFILE%\.claude\CLAUDE.md` | Your personal instructions, every project. |
+| `%USERPROFILE%\.claude\settings.json` | Your settings and permission rules, every project. |
+| `%USERPROFILE%\.claude\projects\<project>\memory\MEMORY.md` | Auto memory index for one project; first 200 lines or 25 KB load each session. |
+| `%USERPROFILE%\.claude\projects\` | Session transcripts (JSONL) per project. |
+| `C:\Program Files\ClaudeCode\CLAUDE.md` | Managed (organisation-wide) instructions, if your IT deploys them. |
+
+  </TabItem>
+  <TabItem label="macOS">
+
+| Path | What it is |
+| --- | --- |
+| `~/.claude/CLAUDE.md` | Your personal instructions, every project. |
+| `~/.claude/settings.json` | Your settings and permission rules, every project. |
+| `~/.claude/projects/<project>/memory/MEMORY.md` | Auto memory index for one project; first 200 lines or 25 KB load each session. |
+| `~/.claude/projects/` | Session transcripts (JSONL) per project. |
+| `/Library/Application Support/ClaudeCode/CLAUDE.md` | Managed (organisation-wide) instructions, if your IT deploys them. |
+
+  </TabItem>
+</Tabs>
+
+Inside a project, the same on every OS:
+
+| Path | What it is |
+| --- | --- |
+| `CLAUDE.md` or `.claude/CLAUDE.md` | Project instructions, shared through version control. |
+| `CLAUDE.local.md` | Your private notes for this project; add to `.gitignore`. |
+| `.claude/rules/*.md` | Instructions split by topic, optionally scoped to file paths. |
+| `.claude/settings.json` | Team settings, hooks, and permissions; commit it. |
+| `.claude/settings.local.json` | Your overrides for this project; stays out of git. |
+| `.claude/skills/<name>/SKILL.md` | A project skill, invoked as `/name`. |
+| `.claude/agents/<name>.md` | A project subagent. |
+| `.mcp.json` | MCP servers added with `--scope project`. |
+
+> TODO(source): the Windows `%USERPROFILE%\.claude\...` spellings are the documentation's `~/.claude/...` paths translated for Windows; the documentation writes them with `~`.

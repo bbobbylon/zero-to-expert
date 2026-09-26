@@ -15,6 +15,10 @@
  * or a CDN font are ever added, change the blurb and `about/privacy.md` in the same commit.
  *
  * `data-pagefind-ignore` keeps this repeated text out of every page's search results.
+ *
+ * In print the directory and the contact button are dropped and one line takes their place:
+ * where the page came from, and a reminder that the stamp on paper is only as current as the
+ * day it was printed. The address is absolute only when `SITE_URL` is set (production).
  */
 import EditLink from 'virtual:starlight/components/EditLink';
 import LastUpdated from 'virtual:starlight/components/LastUpdated';
@@ -26,6 +30,7 @@ import { href } from '../lib/links';
 import { CONTACT_URL, OWNER_NAME, REPO_URL } from '../site.mjs';
 
 const year = new Date().getFullYear();
+const printedFrom = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
 ---
 
 <footer class="sl-flex">
@@ -100,6 +105,11 @@ const year = new Date().getFullYear();
       <a href={CONTACT_URL}>Contact Us</a>
       <span>Spotted an error or a missing source? Open an issue. Corrections are the point of the stamps.</span>
     </div>
+
+    <p class="printed" aria-hidden="true">
+      Printed from <span class="url">{printedFrom}</span>. The stamp on this page shows its status on the day it was
+      printed; the page online may have been checked or corrected since.
+    </p>
   </div>
 </footer>
 
@@ -270,5 +280,39 @@ const year = new Date().getFullYear();
   }
   .contact a:hover {
     background: var(--zx-marker);
+  }
+
+  /* ----- Print: one line in place of the directory ----- */
+  .printed {
+    display: none;
+  }
+  @media print {
+    .columns,
+    .legal ul,
+    .contact {
+      display: none;
+    }
+    .colophon {
+      gap: 0.75rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top-width: 1px;
+    }
+    .legal {
+      padding-top: 0;
+      border-top: 0;
+    }
+    .printed {
+      display: block;
+      margin: 0;
+      color: var(--sl-color-gray-3);
+      font-family: var(--zx-font-mono);
+      font-size: var(--sl-text-xs);
+      line-height: 1.5;
+    }
+    .printed .url {
+      color: var(--sl-color-white);
+      word-break: break-all;
+    }
   }
 </style>

@@ -59,6 +59,13 @@
 }
 
 /* ---------- Tokens: light (the manual on paper) ---------- */
+/*
+ * The same block appears twice: once for the light theme, once for print. Printing must use
+ * the paper palette whatever theme the reader chose, or a dark-theme reader gets pale grey
+ * text on white paper (browsers drop backgrounds when printing). Starlight ships its own
+ * print palette, but these unlayered tokens outrank it, so the override has to happen here.
+ * Keep the two blocks identical; the values are also listed in docs/UI-DESIGN.md.
+ */
 :root[data-theme='light'] {
   --sl-color-white: #161512;
   --sl-color-gray-1: #211f1b;
@@ -81,6 +88,30 @@
   --zx-red: #a8231b;
   --zx-surface: #ece8dc;
   --zx-hairline: #cfc9b9;
+}
+@media print {
+  :root {
+    --sl-color-white: #161512;
+    --sl-color-gray-1: #211f1b;
+    --sl-color-gray-2: #33312b;
+    --sl-color-gray-3: #5b584f;
+    --sl-color-gray-4: #8b877b;
+    --sl-color-gray-5: #c9c3b3;
+    --sl-color-gray-6: #e4dfd1;
+    --sl-color-gray-7: #ece8dc;
+    --sl-color-black: #f4f1e8;
+
+    --sl-color-accent-low: #fbe9a0;
+    --sl-color-accent: #161512;
+    --sl-color-accent-high: #161512;
+
+    --zx-ink: #161512;
+    --zx-label: #161512;
+    --zx-marker: #ffe27a;
+    --zx-red: #a8231b;
+    --zx-surface: #ece8dc;
+    --zx-hairline: #cfc9b9;
+  }
 }
 
 /* ---------- Page canvas ---------- */
@@ -210,6 +241,27 @@ site-search > button[data-open-modal]:hover {
   background: var(--zx-yellow);
   color: var(--zx-on-yellow);
   font-weight: 600;
+}
+/*
+ * Windows high-contrast mode strips background fills, which is how the sidebar's current
+ * page, the marker under a hovered link, and the highlighter on search matches are drawn.
+ * Outlines and underlines survive, so each gets one.
+ */
+@media (forced-colors: active) {
+  .sidebar-content a[aria-current='page'] {
+    outline: 2px solid;
+    outline-offset: -2px;
+  }
+  #starlight__search mark {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+  .sl-markdown-content a:hover:not(:where(.not-content *)),
+  .front-matter a:hover .title,
+  .hub .written:hover .name {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
 }
 
 .right-sidebar-panel h2 {
@@ -390,10 +442,68 @@ starlight-tabs [role='tab'][aria-selected='true'] {
 }
 
 /* ---------- Print ---------- */
-/* A manual should print like one: no yellow slabs of toner, no thumb tab, plain rules. */
+/*
+ * A manual should print like one. People take a walkthrough to the garage or the server room
+ * on paper, so the printed page keeps what matters there (steps, specs, sources, the stamp)
+ * and drops what only works on a screen. The paper palette is forced above, in the tokens.
+ * Component-level print rules (footer colophon, chapter tab, cover buttons) live in the
+ * components; this block covers Starlight's own chrome and Markdown content.
+ */
 @media print {
+  body {
+    background: #fff;
+  }
   .sl-banner {
     border: 1px solid #000;
     background: none;
+  }
+  .page > header.header::before,
+  .right-sidebar,
+  .pagination-links,
+  nav[aria-labelledby='starlight__on-this-page--mobile'] {
+    display: none;
+  }
+  /* Paper has no hover: outside links (the sources, above all) carry their address. */
+  .sl-markdown-content a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-family: var(--zx-font-mono);
+    font-size: 0.8em;
+    word-break: break-all;
+  }
+  /* Collapsed answers and details print open (Chromium 131+, Safari 18.4+; others ignore it). */
+  details::details-content {
+    content-visibility: visible;
+  }
+  /* A heading stays with what follows it; a table row or code block is never split. */
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+  tr,
+  pre,
+  figure,
+  .expressive-code {
+    break-inside: avoid;
+  }
+  /* A long command wraps instead of being cut off at the margin. */
+  .expressive-code .ec-line {
+    white-space: pre-wrap;
+  }
+  /*
+   * Code blocks pick their syntax colours by the reader's theme, not by the media, so a
+   * dark-theme reader would print pale text on paper. Expressive Code stores both themes'
+   * colours on each token (--0 dark, --1 light); on paper, use the light set.
+   */
+  :root .expressive-code {
+    --ec-codeFg: #403f53;
+    --ec-gtrFg: #5b584f;
+  }
+  :root .expressive-code .ec-line :where(span[style^='--']:not([class])) {
+    color: var(--1, inherit);
+    background-color: var(--1bg, transparent);
+    font-style: var(--1fs, inherit);
+    font-weight: var(--1fw, inherit);
+    text-decoration: var(--1td, inherit);
   }
 }

@@ -16,8 +16,8 @@
  */
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
-import { docsLoader } from '@astrojs/starlight/loaders';
-import { docsSchema } from '@astrojs/starlight/schema';
+import { docsLoader, i18nLoader } from '@astrojs/starlight/loaders';
+import { docsSchema, i18nSchema } from '@astrojs/starlight/schema';
 import { DOMAIN_SLUGS, META_DOMAIN } from './domains.mjs';
 
 /**
@@ -132,5 +132,15 @@ export const collections = {
   docs: defineCollection({
     loader: docsLoader(),
     schema: (context) => docsSchema({ extend: guideFields })(context).superRefine(enforceGuideRules),
+  }),
+
+  /**
+   * Starlight's UI strings ("On this page", "Next", the 404 text...). `src/content/i18n/en.json`
+   * overrides the few that should speak in the site's voice; everything else keeps Starlight's
+   * English default. Starlight reads this collection on every build, so it must be defined.
+   */
+  i18n: defineCollection({
+    loader: i18nLoader(),
+    schema: i18nSchema(),
   }),
 };

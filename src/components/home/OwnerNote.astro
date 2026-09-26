@@ -97,19 +97,20 @@ const figures = [
     line-height: 1;
   }
 
-  /* Margin figures: tabular monospace, ruled like a small table in the gutter. */
+  /* Margin figures: tabular monospace, ruled like a small table in the gutter. Three equal
+     columns that may shrink to nothing (minmax(0, …)), so a 320px screen wraps the labels
+     instead of scrolling sideways (WCAG 1.4.10 reflow). */
   .figures {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
     margin: 0;
     border-top: 1px solid var(--zx-hairline);
   }
   .figures > div {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    min-width: 6.5rem;
     padding: 0.85rem 1rem 0.85rem 0;
   }
   .figures > div + div {
@@ -134,8 +135,7 @@ const figures = [
   }
   @media (min-width: 56rem) {
     .figures {
-      flex-direction: column;
-      min-width: 11rem;
+      grid-template-columns: minmax(11rem, auto);
       border-top: 0;
       border-left: 2px solid var(--zx-ink);
     }

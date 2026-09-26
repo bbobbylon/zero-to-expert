@@ -9,9 +9,9 @@ difficulty: easy            # easy | moderate | hard | expert
 status: draft
 safetyCritical: true
 time: "1-2 hours"
-tools: []
-parts: []
-sources: []
+tools: []                   # shown under the title as the bench list, so the reader gathers them before step 1
+parts: []                   # same; part numbers only from a listed source
+sources: []                 # rendered automatically as the last section of the page; do not also write a "Sources" section
 tags: []
 sidebar:
   order: 100
@@ -40,6 +40,8 @@ How the reader confirms the job succeeded before relying on it.
 | --- | --- | --- |
 | ... | ... | ... |
 
-## Sources
+## Next
 
-Link every spec and procedure detail to an entry in `sources`.
+Link the walkthrough that usually follows this one, if there is one.
+
+<!-- Every spec and procedure detail above must trace to an entry in `sources` (frontmatter). The list renders itself at the end of the page; don't write a "Sources" section. -->

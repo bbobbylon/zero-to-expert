@@ -1,6 +1,6 @@
 ---
 title: "AWS CLI cheat sheet"
-description: "AWS CLI commands grouped by how often you'll need them. Only commands verified against AWS documentation are listed; it grows with each level."
+description: "AWS CLI commands grouped by how often you'll need them: signing in, controlling output, and everyday S3, EC2, and IAM work. Every row cites AWS documentation; it grows with each level."
 domain: aws
 pageType: cheatsheet
 status: draft
@@ -14,16 +14,125 @@ sources:
   - title: "Sign up for AWS (advanced) — aws login"
     url: "https://docs.aws.amazon.com/accounts/latest/reference/getting-started.html"
     publisher: "AWS Account Management Reference Guide"
-tags: [aws, cli, cheat-sheet]
+  - title: "Command line options in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-options.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Configuring settings for the AWS CLI (configuration and credentials precedence)"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Configuring environment variables for the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Configuration and credential file settings in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Setting the output format in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-output-format.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Filtering output in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Using the pagination options in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-pagination.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Accessing help and resources for the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-help.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Enabling and using command prompts in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-parameters-prompting.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Using Amazon S3 in the AWS CLI (s3 vs s3api)"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-services-s3.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Using high-level (s3) commands in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-services-s3-commands.html"
+    publisher: "AWS CLI User Guide"
+  - title: "Launching, listing, and deleting Amazon EC2 instances in the AWS CLI"
+    url: "https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html"
+    publisher: "AWS CLI User Guide"
+  - title: "aws configure list"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/configure/list.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws configure list-profiles"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/configure/list-profiles.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws configure get"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/configure/get.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws configure set"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/configure/set.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws configure export-credentials"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/configure/export-credentials.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws s3 ls"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/s3/ls.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws s3 cp"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws s3 sync"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws s3 mb"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/s3/mb.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws s3 rm"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/s3/rm.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws s3 rb"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/s3/rb.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws ec2 describe-instances"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws ec2 describe-regions"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-regions.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws ec2 start-instances"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/ec2/start-instances.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws ec2 stop-instances"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/ec2/stop-instances.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws ec2 terminate-instances"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/ec2/terminate-instances.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws iam get-user"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/iam/get-user.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws iam list-users"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/iam/list-users.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws iam delete-user"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/iam/delete-user.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws logs tail"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/logs/tail.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws ssm start-session"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/ssm/start-session.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "aws cloudformation deploy"
+    url: "https://docs.aws.amazon.com/cli/latest/reference/cloudformation/deploy.html"
+    publisher: "AWS CLI Command Reference"
+  - title: "Install the Session Manager plugin for the AWS CLI"
+    url: "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html"
+    publisher: "AWS Systems Manager User Guide"
+tags: [aws, cli, cheat-sheet, s3, ec2, iam, jmespath]
 sidebar:
   order: 90
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-Level 0 covers installing, signing in, and identity. Each later level adds the commands it teaches (S3, EC2, IAM, and so on) once they're checked against AWS's docs.
+Level 0 covers installing, signing in, and identity. This page also covers the everyday commands you reach for right after that: controlling output (format, filtering, paging) and the daily S3, EC2, and IAM commands. Each later level adds the commands it teaches once they're checked against AWS's docs.
+
+One mental model for the whole page: `aws` is a single remote control for every AWS service. The first word after `aws` picks the service (`s3`, `ec2`, `iam`), the second picks the action (`ls`, `describe-instances`, `list-users`), and a small set of **global options** (`--profile`, `--region`, `--output`, `--query`) works on every button.
 
 ## Common
+
+### Sign in and identity
 
 | Command | What it does |
 | --- | --- |
@@ -32,6 +141,95 @@ Level 0 covers installing, signing in, and identity. Each later level adds the c
 | `aws sts get-caller-identity --profile <name>` | Shows which account and identity your commands are using. Run it first whenever you get "access denied". |
 | `aws <service> <command> --profile <name>` | Runs any command as a given profile |
 | `aws sso logout` | Deletes cached SSO credentials for all profiles |
+
+### Global options and self-help
+
+These change how *every* command behaves. A command line option always beats the matching environment variable, which beats the value in your profile. It's the same order Spring Boot uses for externalized configuration: command-line arguments beat OS environment variables beat `application.yml`.
+
+| Command or option | What it does | Example |
+| --- | --- | --- |
+| `--profile <name>` | Runs this one command as a named profile from `~/.aws/config`. | `aws s3 ls --profile lab` |
+| `--region <code>` | Sends this one command to another Region. Beats `AWS_REGION`, `AWS_DEFAULT_REGION`, and the profile's `region`. | `aws ec2 describe-instances --region us-west-2` |
+| `--output json\|yaml\|text\|table\|off` | Picks the output format for this one command (`json` is the default; see the comparison below). | `aws iam list-users --output table` |
+| `--query '<JMESPath>'` | Filters and reshapes the response on your machine after AWS returns it (examples below). | `aws ec2 describe-volumes --query 'Volumes[].[VolumeId, VolumeType]'` |
+| `--no-cli-pager` | Prints straight to the terminal instead of opening `less` (macOS/Linux) or `more` (Windows). Use it in scripts and when piping. | `aws ec2 describe-regions --no-cli-pager` |
+| `--dry-run` | On the EC2 commands on this page: asks "would I be allowed to do this?" without doing it. See the dry-run table under Uncommon; S3 spells it `--dryrun`. | `aws ec2 stop-instances --instance-ids <id> --dry-run` |
+| `aws help` | The CLI's own manual: global options and every top-level command. | `aws help --no-cli-pager` |
+| `aws <service> help` | Lists that service's commands. | `aws ec2 help` |
+| `aws <service> <command> help` | Full manual for one command: synopsis, every option, examples, and the output fields. | `aws ec2 describe-instances help` |
+| `aws configure list [--profile <name>]` | Shows the profile, access key (masked), secret key (masked), and Region in effect, and *where* each came from (config file, env var, ...). First stop when commands hit the wrong account or Region. | A `region` row reading `config-file` means the profile set it; `env` means a variable did |
+| `aws configure list-profiles` | Lists every profile name the CLI can see. | One name per line; `default` is the one used when `--profile` is omitted |
+| `aws configure get region [--profile <name>]` | Prints one value from the config file. It reads *only* the file: env vars and `--region` are ignored, so it tells you what's written, not what's in effect. | `aws configure get region --profile lab` |
+
+> TODO(test): run on a real profile: `--profile`, `--region`, `--output`, `--query`, `--dry-run`, and `aws configure get region`. Run here on 2026-09-25 with CLI 2.36.9: `aws --version`, `aws help`, `aws ec2 help`, `aws ec2 describe-instances help`, `aws configure list`, `aws configure list-profiles`.
+
+#### Which `--output` to pick
+
+| Format | Best for | Watch out |
+| --- | --- | --- |
+| `json` | The default. Scripts, `jq`, PowerShell's `ConvertFrom-Json`. | Long; pair with `--query` to trim it. |
+| `yaml` | Reading by eye; anything that already speaks YAML (CloudFormation). `yaml-stream` streams large results as they arrive. | |
+| `text` | Tab-separated lines for `grep`, `awk`, or splitting on `` `t `` in PowerShell. | Columns are sorted alphabetically by key and can shift between resources. AWS says to *always* pair `text` with `--query` so you control the column order. |
+| `table` | Reading at a glance. | Not for scripts. |
+| `off` | CI and scripts where only the exit code matters. | Errors still print to stderr. |
+
+#### `--query` in three shapes (JMESPath)
+
+`--query` is client-side: AWS sends the whole response, then the CLI filters it. Many EC2 commands also have `--filters`, which is server-side: AWS returns only matching records. Think SQL: `--filters` is the `WHERE` clause the database runs; `--query` is what you do to the rows after `SELECT *` comes back. Use both on big accounts.
+
+| Goal | `--query` expression | Notes |
+| --- | --- | --- |
+| Pick columns, in your order | `Volumes[].[VolumeId, VolumeType]` | A *multiselect list*. Unnamed columns; pair with `--output text` or `table`. |
+| Pick columns with labels | `Volumes[].{VolumeId: VolumeId, InstanceId: Attachments[0].InstanceId}` | A *multiselect hash*. Labels become column headings in `table` output. |
+| Keep only matching rows | ``Volumes[?Size < `20`].VolumeId`` | A *filter expression*. Literal values go in backticks. Comparators: `==`, `!=`, `<`, `<=`, `>`, `>=`. |
+| Count matches | ``length(Volumes[?Iops > `1000`])`` | Functions such as `length`, `sort_by`, `reverse`, `not_null` are available. |
+| First item of a flattened list | `Volumes[*].Attachments[].InstanceId \| [0]` | The pipe feeds one result into the next expression. |
+
+All five come from AWS's filtering page, where they run against `aws ec2 describe-volumes`.
+
+:::tip[Windows quoting]
+The examples above use single quotes and JMESPath backticks, which suit bash and zsh. AWS's Windows examples wrap the expression in double quotes and write literals with single quotes instead of backticks, for example `--query "Reservations[*].Instances[*].{Instance:InstanceId,Name:Tags[?Key=='Name']|[0].Value}"`. Stick to that form in PowerShell and Command Prompt.
+:::
+
+:::note[Text output runs the query per page]
+With `--output text`, the CLI paginates first and runs `--query` once on *each* page, so you can get one stray match per page. With `json`, `yaml`, or `yaml-stream` the query runs once over the whole result.
+:::
+
+### S3, daily
+
+| Command | What it does | Notes |
+| --- | --- | --- |
+| `aws s3 ls` | Lists your buckets. | `--region us-east-2` narrows to one Region. |
+| `aws s3 ls s3://<bucket>/<prefix>/` | Lists objects under a prefix. Lines starting `PRE` are sub-prefixes ("folders"). | Add `--recursive` to walk everything; `--human-readable --summarize` for sizes and a total. |
+| `aws s3 cp <file> s3://<bucket>/` | Uploads a local file. | Large files are split into multipart uploads automatically. |
+| `aws s3 cp s3://<bucket>/<key> ./` | Downloads one object into the current directory. | `./` is your current directory. |
+| `aws s3 cp s3://<bucket>/ . --recursive` | Downloads a whole bucket or prefix. | `--exclude "*.jpg"` and `--include` filter by pattern, in the order given. |
+| `aws s3 sync . s3://<bucket>/<prefix> --dryrun` | Shows what a sync *would* upload, without uploading. Run this first. | Like `rsync -n`: it prints the plan. |
+| `aws s3 sync . s3://<bucket>/<prefix>` | Copies only files that are new or changed (by size or modified time). Works local to bucket, bucket to local, or bucket to bucket. | `--delete` (mirror mode) is under Rare because it removes files. |
+| `aws s3 mb s3://<bucket>` | Makes a bucket. Names are unique across *all* of S3: lowercase letters, numbers, hyphens, and periods only. | `--region us-west-1` creates it in a specific Region. |
+
+> TODO(test): none of the S3 commands in this table have been run for this guide yet. Run each against a scratch bucket before promoting.
+
+### EC2, read-only
+
+| Command | What it does | Notes |
+| --- | --- | --- |
+| `aws ec2 describe-instances` | Every instance in the current Region, as a list of *reservations* each holding *instances*. Long. | Hence `--query` next. |
+| ``aws ec2 describe-instances --filters Name=tag-key,Values=Name --query 'Reservations[*].Instances[*].{Instance:InstanceId,AZ:Placement.AvailabilityZone,Name:Tags[?Key==`Name`]\|[0].Value}' --output table`` | One row per instance: ID, Availability Zone, and its `Name` tag. AWS's own example. | To show state instead of the zone, swap `AZ:Placement.AvailabilityZone` for `State:State.Name` (the field AWS's output-format page selects). |
+| `aws ec2 describe-instances --filters "Name=instance-type,Values=t2.micro" --query "Reservations[].Instances[].InstanceId"` | IDs of every `t2.micro`. Server-side filter plus client-side query. | `--filters "Name=tag:Name,Values=<value>"` finds instances by their `Name` tag. |
+| `aws ec2 describe-regions` | Regions enabled for your account. | `--all-regions` includes disabled ones; `--query "Regions[].{Name:RegionName}" --output text` prints just the codes. |
+
+> TODO(test): none of the EC2 commands in this table have been run for this guide yet.
+
+### Identity
+
+| Command | What it does | Notes |
+| --- | --- | --- |
+| `aws sts get-caller-identity` | Who am I right now? See [Sign in and identity](#sign-in-and-identity) above. | Cross-reference only. |
+| `aws iam get-user [--user-name <name>]` | Details for one IAM user: name, path, ID, ARN, creation date. Without `--user-name`, IAM works out the user from the access key that signed the request. | Only meaningful for IAM-user credentials. |
+| `aws iam list-users` | Every IAM user in the account (or under `--path-prefix`). | `--output table` reads well; `--output text --query 'Users[*].[UserName,Arn,CreateDate,PasswordLastUsed,UserId]'` is AWS's scripting example. |
+
+> TODO(test): `aws iam get-user` and `aws iam list-users` haven't been run for this guide yet. Also confirm what `aws iam get-user` returns for Identity Center (assumed-role) credentials, where there is no IAM user.
 
 ## Uncommon
 
@@ -44,11 +242,80 @@ Level 0 covers installing, signing in, and identity. Each later level adds the c
 | `aws update` | Updates the CLI in place | For script or official-installer installs; run elevated for all-users installs |
 | `aws login` | Newer programmatic sign-in; rotates credentials every 15 minutes, sessions up to 12 hours | Requires CLI 2.32.0+ |
 
+### Change how the CLI behaves
+
+| Command or setting | What it does | Notes |
+| --- | --- | --- |
+| `aws configure set <name> <value> [--profile <name>]` | Writes one setting. `aws_access_key_id`, `aws_secret_access_key`, and `aws_session_token` go to `~/.aws/credentials`; everything else goes to `~/.aws/config`. Creates the file if needed. | Dotted names target a profile directly: `aws configure set profile.testing2.region eu-west-1`. |
+| `aws configure set cli_pager '' --profile <name>` | Turns the pager off permanently for that profile. | `cli_pager=` in the config file does the same; so does `AWS_PAGER=""`. |
+| `aws configure set cli_help_output url` | Makes `help` print the URL of the online reference page instead of the man page. `browser` opens it as local HTML; `terminal` is the default. | CLI 2.31.0+. |
+| `AWS_PROFILE=<name>` | Environment variable: the profile to use when `--profile` isn't given. Beats `[default]`, loses to `--profile`. | `export AWS_PROFILE=lab` (bash/zsh), `$Env:AWS_PROFILE="lab"` (PowerShell), `setx AWS_PROFILE lab` (persistent, Command Prompt). |
+| `AWS_REGION=<code>` / `AWS_DEFAULT_REGION=<code>` | Both set the Region from the environment. `AWS_REGION` (the SDK-compatible name) overrides `AWS_DEFAULT_REGION` and the profile's `region`; `--region` overrides both. | Set one, not both, or you'll wonder why the other is ignored. |
+| `AWS_DEFAULT_OUTPUT=<format>` | Default output format from the environment. Beats the profile's `output`, loses to `--output`. | |
+| `aws configure export-credentials --profile <name> [--format <fmt>]` | Resolves the profile's credentials the way the CLI would and prints them for another tool. Formats: `process` (default JSON for `credential_process`), `env`, `env-no-export`, `powershell`, `windows-cmd`, `fish`. | Ignores `--query` and `--output`. Handy for handing an SSO profile's temporary keys to a tool that only understands env vars. |
+| `aws --cli-auto-prompt` | Interactive mode: press Enter and the CLI suggests commands, parameters, and even your own resource names; F3 opens the docs panel, F5 previews a `--query`. `--no-cli-auto-prompt` turns it off for one command. | Make it permanent with `cli_auto_prompt = on` (always) or `on-partial` (only when a command is incomplete or fails validation) in the config file, or `AWS_CLI_AUTO_PROMPT`. |
+| `--max-items <n>`, `--page-size <n>`, `--starting-token <token>`, `--no-paginate` | Server-side paging. `--max-items` caps what's printed and returns a `NextToken` you pass to `--starting-token`; `--page-size` only changes how many items each API call fetches (smaller pages dodge timeouts); `--no-paginate` makes exactly one API call. | AWS suggests the same number for `--page-size` and `--max-items` to avoid missing or duplicated items. |
+| `aws <service> <command> --debug 2> debug.txt` | Full Python-level logs of what the CLI did, to a file. Use when a command fails for no visible reason. | `&> debug.txt` captures output and logs together. |
+
+> TODO(test): none of the commands in this table have been run for this guide yet, except `aws configure export-credentials help`.
+
+### Start, stop, watch, deploy
+
+| Command | What it does | Notes |
+| --- | --- | --- |
+| `aws ec2 stop-instances --instance-ids <id>` | Shuts an EBS-backed instance down. No instance or data-transfer charge while stopped, but its volumes are still billed. Anything in RAM is lost unless you `--hibernate`. | Like closing a laptop: disk kept, compute off. `--force` skips a clean shutdown; run a file-system check afterwards. Instance-store-backed instances can't be stopped. |
+| `aws ec2 start-instances --instance-ids <id>` | Starts a stopped EBS-backed instance. Each start bills a one-minute minimum, then per second. | Returns an error for instance-store-backed root devices. |
+| `aws logs tail <log-group> --follow` | Streams a CloudWatch Logs group live, like `tail -f`. Without `--follow` it prints the last ten minutes from every stream in the group. | `--since 1h` (or `5m`, `2h`, `1d`, `1w`, or an ISO 8601 time); `--format short\|detailed\|json`; `--filter-pattern`. Ctrl-C to stop. Ordering by timestamp isn't guaranteed. |
+| `aws ssm start-session --target <instance-id>` | Opens an interactive shell on an EC2 instance through Systems Manager, with no SSH port or key pair. | Needs the **Session Manager plugin** (1.2.764.0 or later) on your machine; check with `session-manager-plugin --version`. Install page: [AWS Systems Manager User Guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html). |
+| `aws cloudformation deploy --template-file <file> --stack-name <name>` | Creates the stack if the name is new, updates it if it exists, by building and running a change set. | `--parameter-overrides Key=Value ...` (or `file://params.json`); `--capabilities CAPABILITY_IAM` or `CAPABILITY_NAMED_IAM` when the template creates IAM resources; `--no-execute-changeset` builds the change set so you can review it before running it. |
+| `aws s3 mv <source> <target>` | Copies then deletes the source. Same shapes as `cp`: local to bucket, bucket to local, bucket to bucket. | |
+| `echo "hello" \| aws s3 cp - s3://<bucket>/<key>` / `aws s3 cp s3://<bucket>/<key> -` | Streams stdin up to an object, or an object down to stdout. | AWS warns PowerShell may change or add CRLF line endings on piped data. |
+
+> TODO(test): none of the commands in this table have been run for this guide yet, except `aws logs tail help`, `aws ssm start-session help`, and `aws cloudformation deploy help`.
+
+### `aws s3` vs `aws s3api`
+
+| | `aws s3` | `aws s3api` |
+| --- | --- | --- |
+| What it is | High-level commands AWS wrote for the CLI: `ls`, `cp`, `mv`, `sync`, `rm`, `mb`, `rb`. | One command per S3 API operation: `list-buckets`, `put-object`, `delete-object`, `head-bucket`, and so on. |
+| Feels like | Unix file commands. Handles recursion, multipart uploads, and include/exclude patterns for you. | The raw API. You get every option the service has, including the ones `s3` hides. |
+| Reach for it when | Day-to-day copying and syncing. | You need something `s3` can't express, such as deleting one *version* of an object with `s3api delete-object --version-id`. |
+
+Analogy: `aws s3` is git's porcelain (`git commit`), `aws s3api` is its plumbing (`git commit-tree`). Same engine, different altitude.
+
+### What `--dryrun` / `--dry-run` covers
+
+Two different things share a name. S3's `--dryrun` is a rehearsal: it prints every operation the command *would* perform. EC2's `--dry-run` is a permission check: it never touches the instance and always answers with an error, `DryRunOperation` if you're allowed or `UnauthorizedOperation` if you're not. Like asking a doorman "would you let me in?" versus walking through and looking around.
+
+| Command | Flag | What it does |
+| --- | --- | --- |
+| `aws s3 cp`, `aws s3 sync`, `aws s3 rm` | `--dryrun` | Lists what would be copied, synced, or deleted. Nothing changes. |
+| `aws s3 ls`, `aws s3 mb`, `aws s3 rb` | none | No dry run. `ls` is read-only anyway; `mb` and `rb` you commit to. |
+| `aws ec2 describe-instances`, `describe-regions`, `start-instances`, `stop-instances`, `terminate-instances` | `--dry-run` | Permission check only; expects an error either way. |
+| `aws iam ...` | none | No dry run on the IAM commands on this page. |
+| `aws cloudformation deploy` | `--no-execute-changeset` | Not a dry run, but the same idea: builds the change set for review and stops. |
+
 ## Rare
 
 :::caution
 Rare commands are the easiest to get wrong. Each links to its official documentation; run them only after reading the linked page.
 :::
+
+### Delete things
+
+Stop versus terminate, in one line: stopping is closing the laptop; terminating is shredding it.
+
+| Command | What it does | Source |
+| --- | --- | --- |
+| `aws s3 rm s3://<bucket>/<prefix> --recursive` | Deletes every object under the prefix. Run the same command with `--dryrun` first and read the list. `--exclude` / `--include` narrow it. | [aws s3 rm](https://docs.aws.amazon.com/cli/latest/reference/s3/rm.html) |
+| `aws s3 sync <source> <target> --delete` | Mirror mode: after copying, deletes anything in the target that isn't in the source. Files excluded by `--exclude` are excluded from deletion too. `--dryrun` first. | [aws s3 sync](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html) |
+| `aws s3 rb s3://<bucket> --force` | Deletes all objects in the bucket, then the bucket. Versioned objects are *not* deleted, so a versioned bucket still fails; remove those with `s3api delete-object --version-id` first. Without `--force` the bucket must already be empty. | [aws s3 rb](https://docs.aws.amazon.com/cli/latest/reference/s3/rb.html) |
+| `aws ec2 terminate-instances --instance-ids <id>` | Permanent and irreversible. EBS volumes marked delete-on-termination go with it; instance-store data is gone. Terminated instances stay visible for about an hour. Termination protection on the instance blocks this call. If you want it back later, use `stop-instances` instead. | [aws ec2 terminate-instances](https://docs.aws.amazon.com/cli/latest/reference/ec2/terminate-instances.html), [EC2 instances in the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html) |
+| `aws iam delete-user --user-name <name>` | Deletes an IAM user. Unlike the console, the CLI won't clean up for you: the call fails until you've removed the user's password, access keys, signing certificates, SSH public keys, service-specific (Git) credentials, MFA devices, inline policies, attached managed policies, and group memberships. | [aws iam delete-user](https://docs.aws.amazon.com/cli/latest/reference/iam/delete-user.html) |
+
+> TODO(test): none of the commands in this table have been run for this guide yet, and they shouldn't be run casually. Test each on throwaway resources in a scratch account before promoting.
+
+### Install and remove the CLI
 
 <Tabs syncKey="os">
 <TabItem label="Windows">
@@ -89,3 +356,8 @@ Rare commands are the easiest to get wrong. Each links to its official documenta
 | --- | --- |
 | `~/.aws/config` (Windows: `%USERPROFILE%\.aws\config`) | Profiles and `sso-session` sections |
 | `~/.aws/sso/cache` | Cached SSO tokens |
+| `~/.aws/credentials` (Windows: `%USERPROFILE%\.aws\credentials`) | Access keys (`aws_access_key_id`, `aws_secret_access_key`, `aws_session_token`) written by `aws configure` or `aws configure set`. Not used by Identity Center profiles. Section headers here are `[name]`, **not** `[profile name]` as in `config`. |
+| `AWS_CONFIG_FILE` | Environment variable that moves the config file somewhere else. Can't be set from a profile or a command line option. |
+| `AWS_SHARED_CREDENTIALS_FILE` | Same for the credentials file. |
+
+The profile-header difference trips people up: `[profile lab]` in `config` and `[lab]` in `credentials` describe the *same* profile. Writing `[profile lab]` in `credentials` creates a profile the CLI can't find.

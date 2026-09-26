@@ -62,19 +62,21 @@ astro.config.mjs               site identity, base path from env, sidebar, compo
 run.sh / run.ps1 / run.cmd     the one entry point on every OS (same commands, same behavior)
 public/                        copied as-is: favicon.svg, og.png (link-preview image)
 docs/                          SRS, ARCHITECTURE, UI-DESIGN, DEPLOYMENT, og-image.html (og.png source)
-templates/                     page templates to copy: level, walkthrough, cheat sheet
+templates/                     page templates to copy: overview, level, concept, walkthrough, cheat sheet
 src/
 ├── domains.mjs                THE list of guides (slug, label, group); drives sidebar, schema, contents page, footer; order = chapter number
 ├── site.mjs                   repo and contact URLs (from CI env vars, local fallback), OWNER_NAME
-├── content.config.ts          frontmatter schema + cross-field rules: the content contract
-├── routeData.ts               route middleware: status ─▶ warning banner
+├── content.config.ts          frontmatter schema + cross-field rules: the content contract; also declares the i18n collection
+├── content/i18n/en.json       the few Starlight UI strings written in the site's voice (404 text, sidebar landmark name)
+├── routeData.ts               route middleware: status ─▶ warning banner; Sources ─▶ "On this page"; verified + TODO(source|test) ─▶ build fails
 ├── plugins/base-links.mjs     Markdown plugin: prefixes the base path onto root links
 ├── lib/
 │   ├── guide-stats.ts         build-time model for the contents page and chapter contents (chapterLabel, getSiteStats)
 │   ├── levels.ts              the six level names (mirrors about/how-guides-work.md)
-│   └── links.ts               href() / entryHref(): base-aware links for components
+│   ├── links.ts               href() / entryHref(): base-aware links for components
+│   └── sources.ts             sourcesSection(): which pages get a Sources section and what its summary says (Sources.astro + routeData.ts)
 ├── pages/index.astro          home page: the manual's contents page
-├── components/                Starlight overrides (Header, Hero, PageTitle, Footer, MarkdownContent) + LevelGauge, StatusChip, GuideHub
+├── components/                Starlight overrides (Header, Hero, PageTitle, Footer, MarkdownContent) + LevelGauge, StatusChip, GuideHub, Sources
 │   └── home/                  contents-page sections: OwnerNote, SectionHeading, ContentsEntry, LevelRuler, WalkthroughList, InspectionLog
 ├── styles/theme.css           design tokens and global styles
 ├── assets/                    logo.svg; diagrams (SVG with alt text)
@@ -94,7 +96,7 @@ src/
 | --- | --- | --- |
 | **Single source of truth** | `src/domains.mjs` | One list feeds the sidebar, the `domain` enum, the dashboard, and the footer, so they cannot disagree. Like a shared enum imported by both DTOs and Angular models. |
 | **Schema as contract** | `src/content.config.ts` | The frontmatter schema is the interface between content and every consumer: this site now, the Phase 2 app later. Like a DTO with Bean Validation plus a class-level validator, run at build time instead of per request. |
-| **Derive, don't duplicate** | `routeData.ts`, `guide-stats.ts`, `PageTitle.astro` | Banners, chips, counts, and progress are computed from frontmatter. A hand-written copy would eventually lie. |
+| **Derive, don't duplicate** | `routeData.ts`, `guide-stats.ts`, `PageTitle.astro`, `Sources.astro` | Banners, chips, counts, progress, the bench list, and the Sources section are computed from frontmatter. A hand-written copy would eventually lie. |
 | **Fail the build, not the reader** | schema, links validator, CI | Every check runs before deploy. A mistake costs a red build, never a broken live page. |
 | **Override, don't fork** | `astro.config.mjs` → `components` | Starlight parts are replaced one at a time. `Header` and `Footer` copy Starlight's layout, so diff them against the originals after an upgrade (see UI-DESIGN §2). |
 | **Content and chrome stay apart** | `src/content/` vs everything else | Markdown uses only portable syntax and four allowed components. All styling and UI logic lives outside content, so Phase 2 can render the same files with its own shell. |
@@ -116,8 +118,8 @@ There is one entity: a **page** (a Markdown file). Its fields are Starlight's bu
 | `status` | `planned` \| `draft` \| `review` \| `verified` | `draft` | Drives banner, chips, and the fact-check meter |
 | `lastVerified` | date | | Required when `status: verified` |
 | `safetyCritical` | boolean | `false` | Needs a source before `review` |
-| `sources` | list of `{ title, url, publisher? }` | `[]` | `url` must be absolute; at least one when `verified` |
-| `tags`, `tools`, `parts` | list of strings | `[]` | |
+| `sources` | list of `{ title, url, publisher? }` | `[]` | `url` must be absolute; at least one when `verified`. Rendered as the page's last section by `Sources.astro` |
+| `tags`, `tools`, `parts` | list of strings | `[]` | `tools` and `parts` render in the header block (`PageTitle.astro`) |
 | `time` | string | | Free text, e.g. "15 minutes (estimate)" |
 
 **Relationships.** A guide (an entry in `domains.mjs`) has many pages through `domain`. A guide has at most one overview and one cheat sheet, and at most one level page per level number; these are conventions, not yet enforced by the schema.
@@ -127,7 +129,7 @@ There is one entity: a **page** (a Markdown file). Its fields are Starlight's bu
 ```
 planned ──▶ draft ──▶ review ──▶ verified
 (placeholder) (written,   (owner is    (checked on lastVerified,
-               unchecked)  checking)     sources listed)
+               unchecked)  checking)     sources listed, no TODO(source|test) left)
         agents stop here ─┘   only the owner moves a page past draft
 ```
 
@@ -163,7 +165,7 @@ On GitHub Pages every URL is prefixed with `/<repo>/`. The Phase 2 API is not de
 
 | Risk | Mitigation |
 | --- | --- |
-| **Wrong content hurting someone** (the main risk for a how-to site) | Status on every page and listing; `safetyCritical` flag and `:::danger` asides; sources required before verification; agents may not verify; specifics must come from listed sources. |
+| **Wrong content hurting someone** (the main risk for a how-to site) | Status on every page and listing; `safetyCritical` flag and `:::danger` asides; sources required before verification and shown on the page; a verified page with a marked gap fails the build; agents may not verify; specifics must come from listed sources. |
 | Attack surface of a server | None exists: no server code, database, accounts, forms, or secrets. Nothing to inject into and nothing to steal. |
 | Compromised CI publishing bad content | Workflow permissions are least-privilege (`contents: read`, `pages: write`, `id-token: write`); deploys use GitHub's OIDC token; only the build job's artifact is published. |
 | Malicious or broken dependency | Exact versions via `package-lock.json` and `npm ci`. No automated dependency audit is configured. `TODO(owner)`: consider Dependabot. |

@@ -196,6 +196,14 @@ const PAGE_TITLE_ID = '_top';
   .btn.secondary:hover {
     background: var(--zx-marker);
   }
+  /* On paper both buttons are plain ink outlines; the actions themselves are of no use there. */
+  @media print {
+    .btn.primary {
+      border-color: var(--zx-ink);
+      background: none;
+      color: var(--zx-ink);
+    }
+  }
 
   .mark {
     flex: none;

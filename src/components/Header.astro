@@ -173,6 +173,16 @@ const isCurrent = (match?: string) => match !== undefined && currentPath === hre
   .primary-nav a[aria-current='page']::after {
     opacity: 1;
   }
+  /* Windows high-contrast mode removes background fills, and the bar with them; an underline
+     survives, so the current section stays marked. */
+  @media (forced-colors: active) {
+    .primary-nav a:hover,
+    .primary-nav a[aria-current='page'] {
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 0.4em;
+    }
+  }
 
   /* Room for the nav appears earlier on pages without a sidebar (the contents page). */
   @media (min-width: 60rem) {

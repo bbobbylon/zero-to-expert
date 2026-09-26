@@ -33,16 +33,18 @@ Do not run `git commit`, `git push`, or create branches or repos. The owner runs
 | --- | --- |
 | `src/domains.mjs` | The list of guides. Adding a guide starts here. |
 | `src/content.config.ts` | Frontmatter schema and cross-field rules (the content contract). |
-| `src/routeData.ts` | Adds the "not fact-checked" banner from `status`. |
+| `src/routeData.ts` | Adds the "not fact-checked" banner from `status`, and the Sources entry to "On this page". |
+| `src/lib/sources.ts` | The one rule for which pages get a Sources section and what its summary says; used by `Sources.astro` and `routeData.ts`. |
 | `src/plugins/base-links.mjs` | Adds the GitHub Pages base path to root links at build time. |
 | `src/pages/index.astro` | Home page: the manual's contents page. Computed from `domains.mjs` and page frontmatter; never list guides by hand. |
-| `src/components/` | UI chrome: Starlight overrides (`Header`, `Hero`, `PageTitle`, `Footer`, `MarkdownContent`), shared pieces (`LevelGauge`, `StatusChip`, `GuideHub`), and the home page's sections in `home/`. |
+| `src/components/` | UI chrome: Starlight overrides (`Header`, `Hero`, `PageTitle`, `Footer`, `MarkdownContent`), shared pieces (`LevelGauge`, `StatusChip`, `GuideHub`, `Sources`), and the home page's sections in `home/`. |
 | `src/site.mjs` | GitHub repo and contact URLs (from CI env vars, with a local fallback) and `OWNER_NAME`, the first name the site signs with. |
 | `src/lib/` | Build-time helpers. `links.ts` has `href()`: every internal link in a component must use it, because components skip the base-path plugin and the links validator. |
 | `src/styles/theme.css` | Design tokens and global styles. Rationale and rules: `docs/UI-DESIGN.md`. |
 | `docs/` | `SRS.md`, `ARCHITECTURE.md`, `UI-DESIGN.md`, `DEPLOYMENT.md`. Update the matching one when behavior, structure, UI, or the pipeline changes. |
 | `src/content/docs/<domain>/` | Content for one guide. |
-| `templates/` | Page templates. Copy them; don't edit them for one-off pages. |
+| `templates/` | Page templates (overview, level, concept, walkthrough, cheat sheet). Copy them; don't edit them for one-off pages. |
+| `src/content/i18n/en.json` | Starlight UI strings overridden in the site's voice (404 text, sidebar landmark). Not guide content. |
 | `.github/workflows/deploy.yml` | CI/CD to GitHub Pages; calls the entry script. |
 | `run.sh`, `run.ps1`, `run.cmd` | The one entry point for every OS. |
 
@@ -61,7 +63,7 @@ Each guide folder follows:
 
 **Levels:** 0 Orientation, 1 Beginner, 2 Intermediate, 3 Advanced, 4 Expert (professional-grade), 5 Mastery. In tech guides, Level 5 covers internals and research papers. In hands-on guides, Level 5 is master-level craft; never claim a page replaces hands-on practice.
 
-**Walkthroughs:** one job per page. Difficulty is `easy | moderate | hard | expert` (brake pads = easy, transmission rebuild = expert). Each has safety notes where relevant, tools and parts, numbered steps, "Check it worked", troubleshooting, and sources.
+**Walkthroughs:** one job per page. Difficulty is `easy | moderate | hard | expert` (brake pads = easy, transmission rebuild = expert). Each has safety notes where relevant, numbered steps, "Check it worked", and troubleshooting. Tools, parts, and sources go in frontmatter (`tools`, `parts`, `sources`), which the page renders itself; don't write "Tools" or "Sources" sections in the body.
 
 **Cheat sheets:** three tiers. Common (most jobs), Uncommon (specific situations), Rare (recovery, niche, or risky). Every Rare entry links to official documentation. Use `<Tabs syncKey="os">` for Windows/macOS variants.
 
@@ -73,7 +75,7 @@ Each guide folder follows:
 2. **Never invent specifics.** Commands, flags, torque values, fluid types, part numbers, wire gauges, dosages, and prices must come from a source listed in `sources`. If you can't source it, leave a marked gap: `> TODO(source): torque spec for caliper bracket bolts`.
 3. **Prefer primary sources:** official docs (AWS, Microsoft, Apple, Roblox Creator Hub), manufacturer service manuals, electrical codes, recognized first-aid curricula. Blogs and forums only as supporting context.
 4. **Vehicle, appliance, and electrical specs are model-specific.** Say so and point to the manual for the exact model instead of giving one "typical" number.
-5. **Commands must be run before verification.** Mark any command you haven't executed with `> TODO(test)`.
+5. **Commands must be run before verification.** Mark any command you haven't executed with `> TODO(test)`. Write these markers exactly (`TODO(source)`, `TODO(test)`): the build refuses a `verified` page that still contains one, so a misspelt marker is a gap the build can't see.
 6. **Don't copy copyrighted material** (manuals, books, paid courses). Summarize in your own words and link.
 7. **`safetyCritical: true`** on anything involving brakes, steering, suspension, fuel, lifting vehicles, mains voltage, TV or microwave power supplies, gas, or medical care. These pages open with a `:::danger` aside.
 8. **If you're unsure, say so on the page** with a `:::caution` aside. An honest gap beats a confident error.

@@ -11,6 +11,13 @@
  *   Chapter 04 · AWS infrastructure / Walkthrough        <- chapter line, with a yellow tab
  *   Set up a static site                                 <- title
  *   LEVEL ▮▮▯▯▯ 2 · Intermediate  DIFFICULTY moderate  TIME 1-2 h   [ DRAFT stamp ]
+ *   TOOLS · a terminal · …          PARTS · …         <- bench list, when the page has one
+ *
+ * The bench list (frontmatter `tools` and `parts`) sits here rather than in the body so a
+ * reader mid-job sees what to gather before step 1, on every walkthrough, in the same place.
+ * The level in the spec strip links to the chapter's page for that level once it is written,
+ * so a reader who arrived from search or the jobs index can find the teaching behind the job.
+ * The page's sources are rendered at the other end of the page (`Sources.astro`).
  *
  * The stamp complements `src/routeData.ts` rather than replacing it: the yellow slip at
  * the top of the page is the loud warning for unchecked pages; the stamp is the quiet,
@@ -23,8 +30,9 @@
 import GuideHub from './GuideHub.astro';
 import LevelGauge from './LevelGauge.astro';
 import StatusChip from './StatusChip.astro';
-import { chapterLabel, chapterNumber, guideLabel, type Status } from '../lib/guide-stats';
+import { chapterLabel, chapterNumber, getSiteStats, guideLabel, type Status } from '../lib/guide-stats';
 import { LEVELS } from '../lib/levels';
+import { entryHref } from '../lib/links';
 import { META_DOMAIN } from '../domains.mjs';
 
 /** Starlight's id for the page's <h1>; its "skip to content" link and TOC both target it. */
@@ -43,11 +51,25 @@ const PAGE_TYPE_LABELS: Record<string, string> = {
 };
 
 const levelInfo = data.level !== undefined ? LEVELS[data.level] : undefined;
+/**
+ * The chapter's own page for this level, once written, so a job or concept reached from
+ * search or the jobs index points back at the teaching it belongs to. A level page doesn't
+ * link to itself.
+ */
+const levelPage =
+  levelInfo && isGuidePage && data.pageType !== 'level'
+    ? (await getSiteStats()).guides.find((guide) => guide.slug === data.domain)?.levelPages[levelInfo.level]
+    : undefined;
 const verifiedOn =
   data.status === 'verified' && data.lastVerified ? data.lastVerified.toISOString().slice(0, 10) : undefined;
 const chapter = isGuidePage ? chapterLabel(chapterNumber(data.domain)) : undefined;
 /** Overview pages have no level, difficulty, or time: they get the stamp alone. */
 const hasSpecs = Boolean(levelInfo || data.difficulty || data.time || data.safetyCritical);
+/** What to have on the bench before step 1: walkthrough `tools` and `parts` from frontmatter. */
+const bench = [
+  { label: 'Tools', items: data.tools ?? [] },
+  { label: 'Parts', items: data.parts ?? [] },
+].filter((group) => group.items.length > 0);
 ---
 
 {
@@ -78,9 +100,15 @@ const hasSpecs = Boolean(levelInfo || data.difficulty || data.time || data.safet
             <dt>Level</dt>
             <dd class="level">
               <LevelGauge filled={levelInfo.level} label={false} size="0.85rem" />
-              <span>
-                {levelInfo.level} · {levelInfo.name}
-              </span>
+              {levelPage ? (
+                <a href={entryHref(levelPage.id)}>
+                  {levelInfo.level} · {levelInfo.name}
+                </a>
+              ) : (
+                <span>
+                  {levelInfo.level} · {levelInfo.name}
+                </span>
+              )}
             </dd>
           </div>
         )}
@@ -107,6 +135,22 @@ const hasSpecs = Boolean(levelInfo || data.difficulty || data.time || data.safet
       </dl>
       )}
       <StatusChip stamp status={data.status as Status} detail={verifiedOn} />
+      {bench.length > 0 && (
+        <dl class="bench" aria-label="What you need">
+          {bench.map((group) => (
+            <div>
+              <dt>{group.label}</dt>
+              <dd>
+                <ul>
+                  {group.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </div>
   )
 }
@@ -139,15 +183,24 @@ const hasSpecs = Boolean(levelInfo || data.difficulty || data.time || data.safet
     line-height: 1.3;
     text-transform: uppercase;
   }
-  /* The thumb tab: chapter number, ink on a block of yellow. */
+  /* The thumb tab: chapter number, ink on a block of yellow. Where fills are not available
+     (paper, Windows high-contrast mode) the tab keeps its shape with a border instead. */
   .tab {
     display: inline-block;
     padding: 0.3em 0.55em;
+    border: 1.5px solid var(--zx-yellow);
     background: var(--zx-yellow);
     color: var(--zx-on-yellow);
     font-size: var(--sl-text-sm);
     letter-spacing: 0.04em;
     line-height: 1;
+  }
+  @media print {
+    .tab {
+      border-color: var(--zx-ink);
+      background: none;
+      color: var(--zx-ink);
+    }
   }
   .guide {
     color: var(--sl-color-white);
@@ -202,6 +255,21 @@ const hasSpecs = Boolean(levelInfo || data.difficulty || data.time || data.safet
     align-items: center;
     gap: 0.55rem;
   }
+  /* The level links to its teaching page (when one exists) in the site's ink-and-marker style. */
+  .level a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .level a:hover {
+    background: var(--zx-marker);
+  }
+  @media (forced-colors: active) {
+    .level a:hover {
+      text-decoration-thickness: 2px;
+    }
+  }
   .difficulty {
     text-transform: capitalize;
   }
@@ -214,5 +282,36 @@ const hasSpecs = Boolean(levelInfo || data.difficulty || data.time || data.safet
   /* Leave the stamp its rotation room. */
   .header-block > :global(.stamp) {
     margin: 0.25rem 0.35rem 0.25rem 0;
+  }
+
+  /* The bench list takes its own row under the specs and the stamp, ruled off with dots. */
+  .bench {
+    flex-basis: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 0.75rem 2rem;
+    margin: 0;
+    padding-top: 0.85rem;
+    border-top: 1px dotted var(--sl-color-gray-4);
+  }
+  .bench > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .bench dd {
+    color: var(--sl-color-gray-1);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .bench ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0;
+    padding-inline-start: 1.1rem;
+  }
+  .bench li::marker {
+    color: var(--sl-color-gray-3);
   }
 </style>

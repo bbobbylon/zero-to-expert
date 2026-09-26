@@ -4,15 +4,15 @@
 | --- | --- |
 | **Version** | 1.1 |
 | **Written** | 2026-09-20 |
-| **Changed in 1.1** | 2026-09-23: verification checklist updated for "The Manual" design (contents page, cover mark, new 404 and link-preview card) |
+| **Changed in 1.1** | 2026-09-23: verification checklist updated for "The Manual" design (contents page, cover mark, new 404 and link-preview card); branch-name issue closed after the move to `main` (two GitHub-side loose ends listed under "Deploy branch") |
 | **Target** | GitHub Pages, deployed by GitHub Actions (`.github/workflows/deploy.yml`) |
 | **Related** | [README](../README.md) (first-time GitHub setup, troubleshooting table), [ARCHITECTURE](./ARCHITECTURE.md) (what gets built), [SRS](./SRS.md) (FR-12, FR-19, FR-20) |
 
 The README covers creating the repository and enabling Pages. This document covers what happens on a deploy, how to check it, and how to undo it.
 
-## Known issue: branch name
+## Deploy branch
 
-**As of 2026-09-20, pushes do not deploy.** The workflow triggers on pushes to `main`:
+The workflow triggers on pushes to `main`:
 
 ```yaml
 on:
@@ -20,16 +20,14 @@ on:
     branches: [main]
 ```
 
-but this repository's only branch, locally and on GitHub, is `master`. The README's setup steps include `git branch -M main`, which was not run for this repo.
+**History.** From 2026-09-18 to 2026-09-23 the repository's only branch was `master`, so pushes did not deploy. On 2026-09-23 the owner moved the work to `main` and pushed it, which is what starts the pipeline. Two loose ends remain until the owner does them on GitHub:
 
-Pick one fix (the owner runs git and GitHub steps):
-
-| Option | How | Trade-off |
+| Loose end | Fix | Why it matters |
 | --- | --- | --- |
-| Rename the branch to `main` (recommended) | On GitHub: **Settings → General → Default branch → rename**. GitHub then shows the local commands to run. | Matches the README, the workflow, and GitHub's default. One-time local update. |
-| Trigger on `master` too | Change the workflow line to `branches: [main, master]` | No rename, but the README and workflow comments keep saying `main`. |
+| The repository's default branch is still `master` | **Settings → General → Default branch → `main`** | The repo's front page, new clones, and pull requests default to the stale pre-redesign code until this is changed. |
+| `master` still exists on GitHub and locally | After the default branch is switched: `git push origin --delete master`, then `git branch -D master` | Two long-lived branches invite pushing to the wrong one, which silently skips the deploy. |
 
-Either way, the first push afterwards publishes the site publicly. Until then, a deploy can still be started by hand: **Actions → Deploy to GitHub Pages → Run workflow**.
+A deploy can also be started by hand at any time: **Actions → Deploy to GitHub Pages → Run workflow**.
 
 ## 1. Environments
 
@@ -107,7 +105,7 @@ push to deploy branch  ─or─  "Run workflow" button
 | View source on any page | `og:image` points at `https://<user>.github.io/<repo>/og.png`, and that URL loads |
 | Paste the site URL into a chat app | Link preview shows the dark cover card with the yellow mark (apps cache previews, so an old one may linger) |
 
-> TODO(test): the production checks above have not been run yet, because no deploy has happened from this repo (see the known issue). The base-path build has been checked locally: every internal `href` and `src` in the output carried the prefix, and the `og:image` tags resolved to an absolute URL.
+> TODO(test): the production checks above have not been run yet. The first push to `main` happened on 2026-09-23, so the checklist can be run against the live site now. The base-path build has been checked locally: every internal `href` and `src` in the output carried the prefix, and the `og:image` tags resolved to an absolute URL.
 
 ## 4. Rollback
 
@@ -134,5 +132,5 @@ The README has the symptom table (unstyled site, failing "Read GitHub Pages sett
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| Push succeeds but no workflow run appears | Branch is not the one the workflow listens to | See "Known issue: branch name" |
+| Push succeeds but no workflow run appears | Branch is not the one the workflow listens to (`main`) | Check `git branch --show-current`; see "Deploy branch" above |
 | Build warns `Could not render "" from route "/[...slug]" as it conflicts with higher priority route "/"` | `src/content/docs/index.md` (the old home page) still exists beside `src/pages/index.astro` (the contents page) | Harmless; the contents page wins. Remove the old file with `git rm src/content/docs/index.md` |

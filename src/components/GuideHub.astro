@@ -155,6 +155,7 @@ const plural = (count: number, word: string) => `${count} ${word}${count === 1 ?
     align-self: center;
   }
   .name {
+    min-width: 0;
     font-family: var(--zx-font-display);
     font-size: 1.2rem;
     font-weight: 600;
@@ -190,6 +191,28 @@ const plural = (count: number, word: string) => `${count} ${word}${count === 1 ?
   /* The gauge is drawn in ink; on an unwritten row it fades with the rest of the line. */
   .row:not(.written) > :global(.gauge) {
     opacity: 0.45;
+  }
+
+  /* Narrow phones (and 400% zoom): the status drops to its own line under the name, indented
+     past the number, so the row never forces a sideways scroll. Same move as the contents page. */
+  @media (max-width: 30rem) {
+    .row {
+      flex-wrap: wrap;
+      row-gap: 0.15rem;
+    }
+    /* The empty leader becomes a full-width, zero-height break, so the status wraps under the
+       name at its own natural width instead of stretching to fill the line. */
+    .leader {
+      flex-basis: 100%;
+      height: 0;
+      min-width: 0;
+      margin: 0;
+      border: 0;
+    }
+    .state,
+    .row > :global(.tag) {
+      margin-inline-start: 1.7rem;
+    }
   }
 
   .also {

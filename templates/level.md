@@ -42,6 +42,4 @@ A small, real task that uses everything on this page.
 
 1. A question the reader should be able to answer now.
 
-## Sources
-
-Every fact above that isn't common knowledge traces to an entry in `sources`.
+<!-- Every fact above that isn't common knowledge traces to an entry in `sources` (frontmatter). The list renders itself at the end of the page; don't write a "Sources" section. -->
