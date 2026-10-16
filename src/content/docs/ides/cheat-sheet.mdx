@@ -1,0 +1,305 @@
+---
+title: "Editors & IDEs cheat sheet"
+description: "VS Code and IntelliJ IDEA shortcuts grouped by how often you'll need them, plus the recovery procedures for when the editor itself is acting up. Windows and macOS keys side by side, as each editor's own documentation writes them."
+domain: ides
+pageType: cheatsheet
+status: draft
+sources:
+  - title: "Keyboard shortcuts for Visual Studio Code"
+    url: "https://code.visualstudio.com/docs/configure/keybindings"
+    publisher: "Visual Studio Code Docs"
+  - title: "Default keyboard shortcuts reference"
+    url: "https://code.visualstudio.com/docs/reference/default-keybindings"
+    publisher: "Visual Studio Code Docs"
+  - title: "Basic editing"
+    url: "https://code.visualstudio.com/docs/editing/codebasics"
+    publisher: "Visual Studio Code Docs"
+  - title: "Code navigation"
+    url: "https://code.visualstudio.com/docs/editing/editingevolved"
+    publisher: "Visual Studio Code Docs"
+  - title: "User interface"
+    url: "https://code.visualstudio.com/docs/getstarted/userinterface"
+    publisher: "Visual Studio Code Docs"
+  - title: "Terminal basics"
+    url: "https://code.visualstudio.com/docs/terminal/basics"
+    publisher: "Visual Studio Code Docs"
+  - title: "User and workspace settings"
+    url: "https://code.visualstudio.com/docs/configure/settings"
+    publisher: "Visual Studio Code Docs"
+  - title: "Settings Sync"
+    url: "https://code.visualstudio.com/docs/configure/settings-sync"
+    publisher: "Visual Studio Code Docs"
+  - title: "Snippets in Visual Studio Code"
+    url: "https://code.visualstudio.com/docs/editing/userdefinedsnippets"
+    publisher: "Visual Studio Code Docs"
+  - title: "Extension Marketplace"
+    url: "https://code.visualstudio.com/docs/configure/extensions/extension-marketplace"
+    publisher: "Visual Studio Code Docs"
+  - title: "Using Git source control in VS Code"
+    url: "https://code.visualstudio.com/docs/sourcecontrol/overview"
+    publisher: "Visual Studio Code Docs"
+  - title: "Integrate with External Tools via Tasks"
+    url: "https://code.visualstudio.com/docs/debugtest/tasks"
+    publisher: "Visual Studio Code Docs"
+  - title: "Debugging"
+    url: "https://code.visualstudio.com/docs/debugtest/debugging"
+    publisher: "Visual Studio Code Docs"
+  - title: "Command Line Interface (CLI)"
+    url: "https://code.visualstudio.com/docs/configure/command-line"
+    publisher: "Visual Studio Code Docs"
+  - title: "Resolving extension issues with bisect"
+    url: "https://code.visualstudio.com/blogs/2021/02/16/extension-bisect"
+    publisher: "Visual Studio Code Blog"
+  - title: "Predefined Windows keymap"
+    url: "https://www.jetbrains.com/help/idea/reference-keymap-win-default.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Predefined macOS keymap"
+    url: "https://www.jetbrains.com/help/idea/reference-keymap-mac-default.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "IntelliJ IDEA keymap reference card (Windows/Linux and macOS)"
+    url: "https://resources.jetbrains.com/storage/products/intellij-idea/docs/IntelliJIDEA_ReferenceCard.pdf"
+    publisher: "JetBrains"
+  - title: "Searching Everywhere"
+    url: "https://www.jetbrains.com/help/idea/searching-everywhere.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Configure keyboard shortcuts"
+    url: "https://www.jetbrains.com/help/idea/configuring-keyboard-shortcuts.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Intention actions"
+    url: "https://www.jetbrains.com/help/idea/intention-actions.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Refactoring code"
+    url: "https://www.jetbrains.com/help/idea/refactoring-source-code.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Code completion"
+    url: "https://www.jetbrains.com/help/idea/auto-completing-code.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Live templates"
+    url: "https://www.jetbrains.com/help/idea/using-live-templates.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Run/debug configurations"
+    url: "https://www.jetbrains.com/help/idea/run-debug-configuration.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Debug code"
+    url: "https://www.jetbrains.com/help/idea/debugging-code.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Breakpoints"
+    url: "https://www.jetbrains.com/help/idea/using-breakpoints.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Maven"
+    url: "https://www.jetbrains.com/help/idea/maven-support.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Maven projects (sync and reload)"
+    url: "https://www.jetbrains.com/help/idea/delegate-build-and-run-actions-to-maven.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Gradle"
+    url: "https://www.jetbrains.com/help/idea/gradle.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Set up a Git repository"
+    url: "https://www.jetbrains.com/help/idea/set-up-a-git-repository.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Commit and push changes to Git repository"
+    url: "https://www.jetbrains.com/help/idea/commit-and-push-changes.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Local History"
+    url: "https://www.jetbrains.com/help/idea/local-history.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Share your IDE settings"
+    url: "https://www.jetbrains.com/help/idea/sharing-your-ide-settings.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Configure project and IDE settings"
+    url: "https://www.jetbrains.com/help/idea/configuring-project-and-ide-settings.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Invalidate caches"
+    url: "https://www.jetbrains.com/help/idea/invalidate-caches.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+  - title: "Repair IDE"
+    url: "https://www.jetbrains.com/help/idea/repair-ide.html"
+    publisher: "JetBrains IntelliJ IDEA Help"
+tags: [vscode, intellij, ide, cheat-sheet]
+sidebar:
+  order: 90
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Every shortcut here also appears, with more explanation, on the [VS Code tips](/ides/concepts/vscode-tips/) or [IntelliJ tips](/ides/concepts/intellij-tips/) page — this sheet is the quick look-up version of the two. Shortcuts are each editor's own **default keymap**; if you've customised yours, Find Action (IntelliJ) or the Keyboard Shortcuts editor (VS Code) shows the live binding. As on both source pages, none of these has been pressed on a real keyboard yet — that's the point of the `TODO(test)` notes, and the page stays `draft` until they have been.
+
+## Common
+
+Reach for these dozens of times a day.
+
+<Tabs syncKey="editor">
+<TabItem label="VS Code">
+
+### Ask by name, and find files
+
+| Shortcut | What it does |
+| --- | --- |
+| `Ctrl+Shift+P` (or `F1`) / `⇧⌘P` | Open the Command Palette |
+| `Ctrl+P` / `⌘P` | Quick Open: fuzzy-find a file by name |
+| `Ctrl+Tab` / `⌃Tab` | Cycle through recently opened editors |
+| `Ctrl+G` / `⌃G` | Go to line |
+
+### Multi-cursor
+
+| Shortcut | What it does |
+| --- | --- |
+| `Alt+Click` / `Option+Click` | Add a cursor where you click |
+| `Ctrl+D` / `⌘D` | Select the word at the cursor, then each next occurrence |
+| `Ctrl+Shift+L` / `⇧⌘L` | Add a cursor at every occurrence of the selection |
+| `Ctrl+Alt+↓` / `Ctrl+Alt+↑` / `⌥⌘↓` / `⌥⌘↑` | Add a cursor on the line below / above |
+
+### Panels
+
+| Shortcut | What it does |
+| --- | --- |
+| ``Ctrl+` `` / ``⌃` `` | Toggle the integrated terminal |
+| `Ctrl+B` / `⌘B` | Toggle the Side Bar |
+| `Ctrl+J` / `⌘J` | Toggle the Panel (terminal, problems, output) |
+| `Ctrl+K Z` / `⌘K Z` | Toggle Zen Mode (`Esc` `Esc` to leave) |
+
+</TabItem>
+<TabItem label="IntelliJ IDEA">
+
+### Ask by name, and navigate
+
+| Shortcut (Windows/Linux · macOS) | What it does |
+| --- | --- |
+| Double Shift · Double ⇧ | Search Everywhere |
+| `Ctrl+Shift+A` · `⌘⇧A` | Find Action |
+| `Ctrl+N` · `⌘O` | Go to Class |
+| `Ctrl+Shift+N` · `⌘⇧O` | Go to File |
+| `Ctrl+B` · `⌘B` (or click with Ctrl / ⌘ held) | Go to Declaration or Usages |
+| `Ctrl+Alt+←` / `Ctrl+Alt+→` · `⌘[` / `⌘]` | Back / Forward |
+
+### Editing and running
+
+| Shortcut (Windows/Linux · macOS) | What it does |
+| --- | --- |
+| `Alt+Enter` · `⌥⏎` | Show Context Actions (intentions and quick fixes) |
+| `Ctrl+Space` · `⌃Space` | Basic code completion |
+| `Ctrl+Shift+Enter` · `⌘⇧⏎` | Complete Current Statement |
+| `Shift+F10` · `⌃R` | Run the current configuration |
+| `Shift+F9` · `⌃D` | Debug the current configuration |
+| `Ctrl+Alt+L` · `⌘⌥L` | Reformat Code |
+| `Ctrl+K` · `⌘K` | Commit |
+| `Ctrl+Shift+K` · `⌘⇧K` | Push |
+
+</TabItem>
+</Tabs>
+
+## Uncommon
+
+Reach for these a few times a week.
+
+<Tabs syncKey="editor">
+<TabItem label="VS Code">
+
+### Navigation and selection
+
+| Shortcut | What it does |
+| --- | --- |
+| `Ctrl+Shift+.` / `⇧⌘.` | Focus the Breadcrumbs, then walk sideways with the arrow keys |
+| `Shift+Alt+→` / `Shift+Alt+←` / `⌃⇧⌘→` / `⌃⇧⌘←` | Expand / shrink the selection to the enclosing block |
+| `Shift+Alt+drag` / `Shift+Option+drag` | Column (box) selection with the mouse |
+
+### Settings, snippets, extensions
+
+| Shortcut | What it does |
+| --- | --- |
+| `Ctrl+,` / `⌘,` | Open the Settings editor |
+| `Ctrl+K Ctrl+S` / `⌘K ⌘S` | Open the Keyboard Shortcuts editor |
+| `Ctrl+Shift+X` / `⇧⌘X` | Open the Extensions view |
+
+### Source control and tasks
+
+| Shortcut | What it does |
+| --- | --- |
+| `Ctrl+Shift+G` / `⌃⇧G` | Open Source Control |
+| `Ctrl+Enter` / `⌘Enter` | Commit the typed message |
+| `Ctrl+K D` / `⌘K D` | Compare the active file with its saved version |
+| `Ctrl+Shift+B` / `⇧⌘B` | Run the default build task |
+
+### Debugging
+
+| Shortcut | What it does |
+| --- | --- |
+| `Ctrl+Shift+D` / `⇧⌘D` | Open the Run and Debug view |
+| `F5` | Start debugging |
+| `F9` | Toggle a breakpoint on the current line |
+| `F10` / `F11` / `Shift+F11` | Step over / into / out |
+
+> TODO(test): every shortcut on this page (Common and Uncommon) was taken from VS Code's own keybinding documentation and reference card, not pressed on this machine. See the tips page for the one exception (`code --version`, `code --help`).
+
+</TabItem>
+<TabItem label="IntelliJ IDEA">
+
+### Refactoring
+
+| Shortcut (Windows/Linux · macOS) | What it does |
+| --- | --- |
+| `Ctrl+Alt+Shift+T` · `⌃T` | Refactor This (menu of what applies here) |
+| `Shift+F6` · `⇧F6` | Rename |
+| `Ctrl+Alt+M` · `⌘⌥M` | Extract Method |
+| `Ctrl+Alt+C` · `⌘⌥C` | Extract Constant |
+| `Alt+Delete` · `⌘⌦` | Safe Delete (refuses if something still uses it) |
+
+### Completion and templates
+
+| Shortcut (Windows/Linux · macOS) | What it does |
+| --- | --- |
+| `Ctrl+Shift+Space` · `⌃⇧Space` | Smart (type-matching) completion |
+| `Ctrl+J` · `⌘J` | Insert Live Template |
+| `Ctrl+Alt+J` · `⌘⌥J` | Surround with Live Template |
+| `psvm`, `sout`, `fori`, `ifn` + Tab | Common Java live-template abbreviations |
+
+### Debugging
+
+| Shortcut (Windows/Linux · macOS) | What it does |
+| --- | --- |
+| `Ctrl+F8` · `⌘F8` | Toggle Line Breakpoint |
+| `F8` | Step Over |
+| `F7` | Step Into |
+| `Shift+F8` | Step Out |
+| `Alt+F8` · `⌥F8` | Evaluate Expression |
+
+### Build sync and Git
+
+| Shortcut (Windows/Linux · macOS) | What it does |
+| --- | --- |
+| `Ctrl+Shift+O` (both) | Sync Maven/Gradle Changes, after a hand edit to `pom.xml` or `build.gradle` |
+| `Alt+0` · `⌘0` | Show the Commit tool window |
+| `Alt+9` · `⌘9` | Show the Git Log |
+| `Ctrl+T` · `⌘T` | Update Project (pull) |
+
+### Settings
+
+| Shortcut (Windows/Linux · macOS) | What it does |
+| --- | --- |
+| `Ctrl+Alt+S` · `⌘,` | Settings |
+| `Ctrl+Alt+O` · `⌃⌥O` | Optimize Imports |
+
+> TODO(test): every shortcut on this page (Common and Uncommon) was taken from JetBrains' keymap references and reference card, not pressed on IntelliJ IDEA 2025.1 on this machine.
+
+</TabItem>
+</Tabs>
+
+## Rare
+
+:::caution
+These are recovery procedures, not single shortcuts — read the situation, and the linked official page, before picking one.
+:::
+
+| Editor | Situation | What to do | Source |
+| --- | --- | --- | --- |
+| VS Code | An extension seems to be causing a slowdown, freeze, or odd completions | Start with `code --disable-extensions` to confirm an extension is the cause. If it is, run **Help: Start Extension Bisect** from the Command Palette to find the culprit by halving the enabled set, instead of toggling extensions one at a time. | [Resolving extension issues with bisect](https://code.visualstudio.com/blogs/2021/02/16/extension-bisect), [Command Line Interface (CLI)](https://code.visualstudio.com/docs/configure/command-line) |
+| VS Code | One setting needs to go back to its default | Open the Settings editor, hover the setting, click its gear icon, choose **Reset Setting**. | [User and workspace settings](https://code.visualstudio.com/docs/configure/settings) |
+| VS Code | `settings.json` needs a clean slate | Copy the file somewhere first — there is no undo — then delete the entries between the braces. | [User and workspace settings](https://code.visualstudio.com/docs/configure/settings) |
+| IntelliJ IDEA | Imports stay red after editing `pom.xml`/`build.gradle` by hand, even after a sync | Try **Reload All Maven Projects** (or Gradle's equivalent full sync) from the Maven/Gradle tool window before assuming something is broken or reinstalling anything. | [Maven projects (sync and reload)](https://www.jetbrains.com/help/idea/delegate-build-and-run-actions-to-maven.html), [Gradle](https://www.jetbrains.com/help/idea/gradle.html) |
+| IntelliJ IDEA | The IDE itself is glitching (phantom errors, stuck UI), not one project | Try **Repair IDE** (File → Repair IDE) first — it fixes one project step by step without a restart. Reach for **Invalidate Caches** only after that fails, and read its checkboxes: "Clear file system cache and Local History" also throws away your Local History safety net. | [Repair IDE](https://www.jetbrains.com/help/idea/repair-ide.html), [Invalidate caches](https://www.jetbrains.com/help/idea/invalidate-caches.html) |
+| IntelliJ IDEA | You need an old version of a file and there's no commit to restore from | Right-click the file or folder → **Local History → Show History**. It is not a backup: entries are local only and expire after five working days by default. | [Local History](https://www.jetbrains.com/help/idea/local-history.html) |
+| IntelliJ IDEA | A keymap got rebound and you want the default back | Settings → Keymap, find the action, right-click → **Reset Shortcuts**. | [Configure keyboard shortcuts](https://www.jetbrains.com/help/idea/configuring-keyboard-shortcuts.html) |
+| IntelliJ IDEA | You're about to reset the whole IDE configuration | **Restore Default Settings** backs up the current configuration first, to a dated `-backup` folder under the IDE's settings directory, before resetting. | [Configure project and IDE settings](https://www.jetbrains.com/help/idea/configuring-project-and-ide-settings.html) |
+
+> TODO(test): none of the recovery procedures above has been run on this machine; each is described exactly as its official documentation page describes it.
